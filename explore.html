@@ -44,9 +44,16 @@
           <h2 id="song-title">Loading…</h2>
           <div id="song-meta" class="muted"></div>
           <div class="transport" id="transport">
-            <button type="button" id="play-pause-btn" title="Play" aria-label="Play">Play</button>
-            <button type="button" id="stop-btn" title="Stop" aria-label="Stop">Stop</button>
-            <button type="button" id="follow-playhead-btn" class="is-active" title="Following playhead" aria-label="Following playhead" aria-pressed="true">Follow</button>
+            <button type="button" id="play-pause-btn" class="transport-btn" title="Play" aria-label="Play">
+              <svg class="transport-icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="transport-icon-pause hidden" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/></svg>
+            </button>
+            <button type="button" id="stop-btn" class="transport-btn" title="Stop" aria-label="Stop">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h12v12H6V6z"/></svg>
+            </button>
+            <button type="button" id="follow-playhead-btn" class="transport-btn is-active" title="Following playhead" aria-label="Following playhead" aria-pressed="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4h2v8H11z"/><path d="M8 14l4 5 4-5z"/></svg>
+            </button>
             <input id="seek" type="range" min="0" max="1000" value="0" />
             <span id="time-display">0:00 / 0:00</span>
           </div>

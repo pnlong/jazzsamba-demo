@@ -90,7 +90,10 @@
     const btn = playPauseBtn();
     if (!btn) return;
     const playing = !audio().paused;
-    btn.textContent = playing ? "Pause" : "Play";
+    const playIcon = btn.querySelector(".transport-icon-play");
+    const pauseIcon = btn.querySelector(".transport-icon-pause");
+    if (playIcon) playIcon.classList.toggle("hidden", playing);
+    if (pauseIcon) pauseIcon.classList.toggle("hidden", !playing);
     btn.title = playing ? "Pause" : "Play";
     btn.setAttribute("aria-label", playing ? "Pause" : "Play");
   }
