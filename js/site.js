@@ -26,12 +26,29 @@
     { name: "Phillip Long", instrument: "Trumpet", slug: "phillip-long" },
     { name: "Jacob Nguyen", instrument: "Piano", slug: "jacob-nguyen" },
     { name: "Jace Hosto", instrument: "Drums", slug: "jace-hosto" },
-    { name: "Gage Hosto", instrument: "Alto saxophone", slug: "gage-hosto" },
+    { name: "Gage Hosto", instrument: "Alto Saxophone", slug: "gage-hosto" },
     { name: "Jett Takazawa", instrument: "Bass", slug: "jett-takazawa" },
     { name: "Sebastian Stade", instrument: "Bass", slug: "sebastian-stade" },
-    { name: "Fares Nofal", instrument: "Tenor saxophone", slug: "fares-nofal" },
+    { name: "Fares Nofal", instrument: "Tenor Saxophone", slug: "fares-nofal" },
     { name: "Jungyeon Bac", instrument: "Bass", slug: "jungyeon-bac" },
   ];
+
+  function protocolLabel(synchronous) {
+    return synchronous ? "Synchronous" : "Asynchronous";
+  }
+
+  function protocolChipClass(synchronous) {
+    return synchronous ? "chip-sync" : "chip-async";
+  }
+
+  function titleCaseWords(text) {
+    return String(text || "")
+      .replace(/_/g, " ")
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(" ");
+  }
 
   const LINKS = {
     code: "https://github.com/pnlong/jazz-standard-dataset",
@@ -70,7 +87,7 @@
 
   function renderAffils(el) {
     if (!el) return;
-    el.innerHTML = `<ol>${AFFILS.map((a, i) => `<li>${i + 1}. ${a}</li>`).join("")}</ol>`;
+    el.innerHTML = `<ol>${AFFILS.map((a) => `<li>${a}</li>`).join("")}</ol>`;
   }
 
   function initials(name) {
@@ -142,6 +159,9 @@
     wireCodeLinks,
     loadCatalog,
     initials,
+    protocolLabel,
+    protocolChipClass,
+    titleCaseWords,
   };
 
   document.addEventListener("DOMContentLoaded", () => {

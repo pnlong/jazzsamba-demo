@@ -28,8 +28,8 @@
           <label for="protocol-filter">Protocol</label>
           <select id="protocol-filter">
             <option value="all">All</option>
-            <option value="async">Async</option>
-            <option value="sync">Sync</option>
+            <option value="async">Asynchronous</option>
+            <option value="sync">Synchronous</option>
           </select>
         </div>
         <div>
@@ -44,8 +44,9 @@
           <h2 id="song-title">Loading…</h2>
           <div id="song-meta" class="muted"></div>
           <div class="transport" id="transport">
-            <button type="button" id="play-btn">Play</button>
-            <button type="button" id="stop-btn">Stop</button>
+            <button type="button" id="play-pause-btn" title="Play" aria-label="Play">Play</button>
+            <button type="button" id="stop-btn" title="Stop" aria-label="Stop">Stop</button>
+            <button type="button" id="follow-playhead-btn" class="is-active" title="Following playhead" aria-label="Following playhead" aria-pressed="true">Follow</button>
             <input id="seek" type="range" min="0" max="1000" value="0" />
             <span id="time-display">0:00 / 0:00</span>
           </div>

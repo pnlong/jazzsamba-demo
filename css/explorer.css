@@ -125,6 +125,12 @@
   cursor: pointer;
 }
 
+.transport button.is-active {
+  background: var(--sea-soft);
+  border-color: var(--sea);
+  color: var(--ink);
+}
+
 .transport button:hover {
   border-color: var(--ink);
 }

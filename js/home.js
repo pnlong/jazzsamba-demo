@@ -1,6 +1,7 @@
 /** Home page: stats + featured better-mix players (2 async + 2 sync slots). */
 (function () {
-  const { loadCatalog, renderAuthors, renderAffils } = window.JazzSambaSite;
+  const { loadCatalog, renderAuthors, renderAffils, protocolLabel, protocolChipClass } =
+    window.JazzSambaSite;
 
   function songById(catalog, id) {
     if (id == null) return null;
@@ -23,11 +24,13 @@
     const items = featuredSongs(catalog);
     root.innerHTML = items
       .map(({ protocol, song, slot }) => {
-        const chip = protocol === "sync" ? "chip-sync" : "chip-async";
+        const sync = protocol === "sync";
+        const chip = protocolChipClass(sync);
+        const label = protocolLabel(sync);
         if (!song) {
           return `
             <article class="sample-card empty">
-              <span class="chip ${chip}">${protocol}</span>
+              <span class="chip ${chip}">${label}</span>
               <h3>Featured song TBD</h3>
               <p class="muted">Set <code>featured.${protocol}</code> song_id in <code>data/catalog.json</code>${
                 slot == null ? "" : ` (current: ${slot})`
@@ -36,9 +39,8 @@
         }
         return `
           <article class="sample-card">
-            <span class="chip ${chip}">${protocol}</span>
+            <span class="chip ${chip}">${label}</span>
             <h3>${song.title}</h3>
-            <p class="muted">${song.artist || ""} · ${song.genre || ""} · ${song.bpm || "?"} BPM</p>
             <audio controls preload="none" src="${song.audio_url}"></audio>
             <p><a href="explore.html?song_id=${song.song_id}">Open in explorer</a></p>
           </article>`;

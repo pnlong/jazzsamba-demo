@@ -28,6 +28,10 @@
   padding-left: 1.2rem;
 }
 
+.affil-legend li {
+  margin: 0.1rem 0;
+}
+
 .sample-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
