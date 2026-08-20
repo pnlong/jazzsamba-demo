@@ -18,6 +18,24 @@
     ];
   }
 
+  function renderStems(stems) {
+    if (!stems || !stems.length) return "";
+    const rows = stems
+      .map(
+        (stem) => `
+        <div class="stem-row">
+          <span class="stem-label">${stem.label}</span>
+          <audio controls preload="none" src="${stem.url}"></audio>
+        </div>`
+      )
+      .join("");
+    return `
+      <div class="stem-list">
+        <h4>Stems</h4>
+        ${rows}
+      </div>`;
+  }
+
   function renderSamples(catalog) {
     const root = document.getElementById("featured-samples");
     if (!root) return;
@@ -41,7 +59,11 @@
           <article class="sample-card">
             <span class="chip ${chip}">${label}</span>
             <h3>${song.title}</h3>
-            <audio controls preload="none" src="${song.audio_url}"></audio>
+            <div class="mix-block">
+              <span class="stem-label">Mixture</span>
+              <audio controls preload="none" src="${song.audio_url}"></audio>
+            </div>
+            ${renderStems(song.stems)}
             <p><a href="explore.html?song_id=${song.song_id}">Open in explorer</a></p>
           </article>`;
       })

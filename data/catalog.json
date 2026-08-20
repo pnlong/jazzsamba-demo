@@ -219,7 +219,34 @@
       "protocol": "async",
       "audio_url": "audio/async/07-blue_bossa/better/mixture.mp3",
       "peaks_url": "data/peaks/async/07-blue_bossa.json",
-      "annotations_url": "data/annotations/async/07-blue_bossa.json"
+      "annotations_url": "data/annotations/async/07-blue_bossa.json",
+      "stems": [
+        {
+          "id": "drums",
+          "label": "Drums",
+          "url": "audio/async/07-blue_bossa/better/stems/drums.mp3"
+        },
+        {
+          "id": "bass",
+          "label": "Bass",
+          "url": "audio/async/07-blue_bossa/better/stems/bass.mp3"
+        },
+        {
+          "id": "piano",
+          "label": "Piano",
+          "url": "audio/async/07-blue_bossa/better/stems/piano.mp3"
+        },
+        {
+          "id": "trumpet",
+          "label": "Trumpet",
+          "url": "audio/async/07-blue_bossa/better/stems/trumpet.mp3"
+        },
+        {
+          "id": "saxophone_alto",
+          "label": "Alto Saxophone",
+          "url": "audio/async/07-blue_bossa/better/stems/saxophone_alto.mp3"
+        }
+      ]
     },
     {
       "song_id": 8,
@@ -579,7 +606,34 @@
       "protocol": "async",
       "audio_url": "audio/async/25-lullaby_of_birdland/better/mixture.mp3",
       "peaks_url": "data/peaks/async/25-lullaby_of_birdland.json",
-      "annotations_url": "data/annotations/async/25-lullaby_of_birdland.json"
+      "annotations_url": "data/annotations/async/25-lullaby_of_birdland.json",
+      "stems": [
+        {
+          "id": "drums",
+          "label": "Drums",
+          "url": "audio/async/25-lullaby_of_birdland/better/stems/drums.mp3"
+        },
+        {
+          "id": "bass",
+          "label": "Bass",
+          "url": "audio/async/25-lullaby_of_birdland/better/stems/bass.mp3"
+        },
+        {
+          "id": "piano",
+          "label": "Piano",
+          "url": "audio/async/25-lullaby_of_birdland/better/stems/piano.mp3"
+        },
+        {
+          "id": "trumpet",
+          "label": "Trumpet",
+          "url": "audio/async/25-lullaby_of_birdland/better/stems/trumpet.mp3"
+        },
+        {
+          "id": "saxophone_alto",
+          "label": "Alto Saxophone",
+          "url": "audio/async/25-lullaby_of_birdland/better/stems/saxophone_alto.mp3"
+        }
+      ]
     },
     {
       "song_id": 26,
@@ -1099,7 +1153,34 @@
       "protocol": "sync",
       "audio_url": "audio/sync/51-amazing_grace/better/mixture.mp3",
       "peaks_url": "data/peaks/sync/51-amazing_grace.json",
-      "annotations_url": "data/annotations/sync/51-amazing_grace.json"
+      "annotations_url": "data/annotations/sync/51-amazing_grace.json",
+      "stems": [
+        {
+          "id": "drums",
+          "label": "Drums",
+          "url": "audio/sync/51-amazing_grace/better/stems/drums.mp3"
+        },
+        {
+          "id": "kick",
+          "label": "Kick",
+          "url": "audio/sync/51-amazing_grace/better/stems/kick.mp3"
+        },
+        {
+          "id": "bass",
+          "label": "Bass",
+          "url": "audio/sync/51-amazing_grace/better/stems/bass.mp3"
+        },
+        {
+          "id": "piano",
+          "label": "Piano",
+          "url": "audio/sync/51-amazing_grace/better/stems/piano.mp3"
+        },
+        {
+          "id": "trumpet",
+          "label": "Trumpet",
+          "url": "audio/sync/51-amazing_grace/better/stems/trumpet.mp3"
+        }
+      ]
     },
     {
       "song_id": 52,
@@ -1339,7 +1420,34 @@
       "protocol": "sync",
       "audio_url": "audio/sync/63-la_vie_en_rose/better/mixture.mp3",
       "peaks_url": "data/peaks/sync/63-la_vie_en_rose.json",
-      "annotations_url": "data/annotations/sync/63-la_vie_en_rose.json"
+      "annotations_url": "data/annotations/sync/63-la_vie_en_rose.json",
+      "stems": [
+        {
+          "id": "drums",
+          "label": "Drums",
+          "url": "audio/sync/63-la_vie_en_rose/better/stems/drums.mp3"
+        },
+        {
+          "id": "kick",
+          "label": "Kick",
+          "url": "audio/sync/63-la_vie_en_rose/better/stems/kick.mp3"
+        },
+        {
+          "id": "bass",
+          "label": "Bass",
+          "url": "audio/sync/63-la_vie_en_rose/better/stems/bass.mp3"
+        },
+        {
+          "id": "piano",
+          "label": "Piano",
+          "url": "audio/sync/63-la_vie_en_rose/better/stems/piano.mp3"
+        },
+        {
+          "id": "saxophone_alto",
+          "label": "Alto Saxophone",
+          "url": "audio/sync/63-la_vie_en_rose/better/stems/saxophone_alto.mp3"
+        }
+      ]
     },
     {
       "song_id": 64,

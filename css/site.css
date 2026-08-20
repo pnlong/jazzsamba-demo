@@ -34,7 +34,7 @@
 
 .sample-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
 }
 
@@ -57,7 +57,34 @@
 
 .sample-card audio {
   width: 100%;
-  margin-top: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.sample-card .mix-block,
+.sample-card .stem-list {
+  margin-top: 0.85rem;
+}
+
+.sample-card .stem-list h4 {
+  margin: 0 0 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.stem-row,
+.mix-block {
+  display: grid;
+  gap: 0.15rem;
+  margin-bottom: 0.55rem;
+}
+
+.stem-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
 }
 
 .sample-card.empty {
