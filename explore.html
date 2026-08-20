@@ -59,6 +59,13 @@
             <button type="button" id="follow-playhead-btn" class="transport-btn is-active" title="Following playhead" aria-label="Following playhead" aria-pressed="true">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4h2v8H11z"/><path d="M8 14l4 5 4-5z"/></svg>
             </button>
+            <button type="button" id="metronome-btn" class="transport-btn" title="Metronome off" aria-label="Metronome off" aria-pressed="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2l6 18H6L12 2zm0 5.5L8.6 18h6.8L12 7.5z"/>
+                <path d="M11 10h2v5h-2z"/>
+                <circle cx="12" cy="17.5" r="1.2"/>
+              </svg>
+            </button>
             <input id="seek" type="range" min="0" max="1000" value="0" />
             <span id="time-display">0:00 / 0:00</span>
           </div>
@@ -85,6 +92,7 @@
 
   <script src="js/site.js"></script>
   <script src="js/metrical.js"></script>
+  <script src="js/metronome.js"></script>
   <script src="js/explorer.js"></script>
 </body>
 </html>

@@ -143,6 +143,17 @@
   height: 1.25rem;
 }
 
+#metronome-btn svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+#metronome-btn.is-active {
+  background: var(--sea-soft);
+  border-color: var(--sea);
+  color: var(--ink);
+}
+
 .transport-btn .hidden {
   display: none !important;
 }

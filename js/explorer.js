@@ -15,6 +15,8 @@
   let raf = 0;
   let followPlayhead = true;
   let syncingScroll = false;
+  let metronome = null;
+  let metroTransport = null;
 
   const audio = () => document.getElementById("audio");
   const seek = () => document.getElementById("seek");
@@ -27,7 +29,58 @@
   const statusEl = () => document.getElementById("explorer-status");
   const playPauseBtn = () => document.getElementById("play-pause-btn");
   const followBtn = () => document.getElementById("follow-playhead-btn");
+  const metronomeBtn = () => document.getElementById("metronome-btn");
 
+  function beatsPerBarFromSong(song) {
+    const m = String(song?.time_signature || "4/4").match(/(\d+)\s*\/\s*\d+/);
+    const n = m ? parseInt(m[1], 10) : 4;
+    return Number.isFinite(n) && n > 0 ? n : 4;
+  }
+
+  function createMetroTransport() {
+    let playbackContext = null;
+    const listeners = new Set();
+
+    function ensureAudioContext() {
+      if (!playbackContext || playbackContext.state === "closed") {
+        playbackContext = new AudioContext();
+      }
+      if (playbackContext.state === "suspended" || playbackContext.state === "interrupted") {
+        playbackContext.resume().catch(() => {});
+      }
+      return playbackContext;
+    }
+
+    function notify(type, detail = {}) {
+      for (const cb of listeners) {
+        try {
+          cb({ type, ...detail });
+        } catch (_) {
+          /* ignore listener errors */
+        }
+      }
+    }
+
+    return {
+      ensureAudioContext,
+      isPlaying: () => !audio().paused,
+      getCurrentTime: () => Math.max(0, audio().currentTime || 0),
+      getAudioContext: () =>
+        playbackContext && playbackContext.state !== "closed" ? playbackContext : null,
+      timelineToContextTime(t) {
+        if (audio().paused || !playbackContext || playbackContext.state !== "running") return null;
+        const timelineT = Number(t);
+        if (!Number.isFinite(timelineT)) return null;
+        return playbackContext.currentTime + (timelineT - (audio().currentTime || 0));
+      },
+      onTransportChange(cb) {
+        if (typeof cb !== "function") return () => {};
+        listeners.add(cb);
+        return () => listeners.delete(cb);
+      },
+      notify,
+    };
+  }
   function fmt(t) {
     const m = Math.floor(t / 60);
     const s = Math.floor(t % 60);
@@ -272,6 +325,7 @@
     });
     setStatus("Better-take mixture · stems available in the Zenodo download");
     updatePlayPauseUI();
+    metronome?.sync?.();
   }
 
   function filteredSongs() {
@@ -322,14 +376,32 @@
     updateFollowUI();
     syncPlayhead();
     scrollToTime(t, true);
+    metroTransport?.notify("seek", { t });
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
+    metroTransport = createMetroTransport();
+    metronome = createMetronomeUI({
+      transport: metroTransport,
+      getBars: () => annotations?.bars || [],
+      getBeatsPerBar: () => beatsPerBarFromSong(currentSong),
+      buttonEl: metronomeBtn(),
+      statusEl: statusEl(),
+    });
+    metronomeBtn().addEventListener(
+      "click",
+      () => {
+        metroTransport.ensureAudioContext();
+      },
+      true
+    );
+
     playPauseBtn().addEventListener("click", async () => {
       const a = audio();
       if (a.paused) {
         followPlayhead = true;
         updateFollowUI();
+        metroTransport.ensureAudioContext();
         try {
           await a.play();
         } catch (_) {
@@ -337,9 +409,11 @@
         }
         cancelAnimationFrame(raf);
         raf = requestAnimationFrame(syncPlayhead);
+        metroTransport.notify("play");
       } else {
         a.pause();
         updatePlayPauseUI();
+        metroTransport.notify("pause");
       }
     });
     document.getElementById("stop-btn").addEventListener("click", () => {
@@ -350,6 +424,8 @@
       updateFollowUI();
       syncPlayhead();
       scrollToTime(0, true);
+      metroTransport.notify("seek", { t: 0 });
+      metroTransport.notify("pause");
     });
     followBtn().addEventListener("click", () => {
       followPlayhead = true;
@@ -363,6 +439,7 @@
       updateFollowUI();
       syncPlayhead();
       scrollToTime(a.currentTime, true);
+      metroTransport.notify("seek", { t: a.currentTime });
     });
     waveformWrap().addEventListener("click", (ev) => {
       seekFromClientX(ev.clientX, waveformWrap());
@@ -387,15 +464,20 @@
       waveformWrap().scrollLeft = lanesPanel().scrollLeft;
       syncingScroll = false;
     });
-    audio().addEventListener("pause", updatePlayPauseUI);
+    audio().addEventListener("pause", () => {
+      updatePlayPauseUI();
+      metroTransport.notify("pause");
+    });
     audio().addEventListener("play", () => {
       updatePlayPauseUI();
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(syncPlayhead);
+      metroTransport.notify("play");
     });
     audio().addEventListener("ended", () => {
       updatePlayPauseUI();
       syncPlayhead();
+      metroTransport.notify("ended");
     });
     window.addEventListener("keydown", (ev) => {
       if (ev.code !== "Space" && ev.key !== " ") return;
