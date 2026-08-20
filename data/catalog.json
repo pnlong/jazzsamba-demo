@@ -9,14 +9,14 @@
   },
   "featured": {
     "async": [
-      null,
-      null
+      25,
+      7
     ],
     "sync": [
-      null,
-      null
+      51,
+      63
     ],
-    "note": "Fill with song_id values (2 async + 2 sync)."
+    "note": "Lullaby of Birdland, Blue Bossa (async); Amazing Grace, La Vie en Rose (sync)."
   },
   "musicians": [
     {
