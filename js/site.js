@@ -16,10 +16,10 @@
   ];
 
   const AFFILS = [
-    "UC San Diego",
+    "University of California, San Diego",
     "Boston College",
     "College of the Ozarks",
-    "MIT",
+    "Massachusetts Institute of Technology",
   ];
 
   const BAND = [
