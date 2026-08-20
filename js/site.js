@@ -52,6 +52,7 @@
 
   const LINKS = {
     code: "https://github.com/pnlong/jazz-standard-dataset",
+    package: "https://github.com/pnlong/jazzsamba",
     zenodo: null,
     paper: null,
   };
@@ -77,10 +78,7 @@
     if (!el) return;
     const parts = AUTHORS.map((a) => {
       const sup = a.affil == null ? "" : `<sup>${a.affil}</sup>`;
-      const name = a.band
-        ? `<a href="band.html">${a.name}</a>${sup}`
-        : `${a.name}${sup}`;
-      return name;
+      return `${a.name}${sup}`;
     });
     el.innerHTML = parts.join(", ");
   }
@@ -121,6 +119,9 @@
   function wireCodeLinks() {
     document.querySelectorAll("[data-link=code]").forEach((a) => {
       a.href = LINKS.code;
+    });
+    document.querySelectorAll("[data-link=package]").forEach((a) => {
+      a.href = LINKS.package;
     });
     document.querySelectorAll("[data-link=zenodo]").forEach((a) => {
       if (LINKS.zenodo) a.href = LINKS.zenodo;
