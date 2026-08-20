@@ -1,30 +1,36 @@
 # jazzsamba-demo
 
-Public project page for **JazzSAMBA**: Home, Explore (mix-only lane viewer), About, and The Band.
+Project page for **JazzSAMBA**: paper overview, mix-only dataset explorer, recording story, and the band.
 
-Hosted as GitHub Pages. Prefer repo name `jazzsamba-demo` so the `jazzsamba` name stays free for the Python package.
+Live site: [pnlong.github.io/jazzsamba-demo](https://pnlong.github.io/jazzsamba-demo/)
+
+## Related repos
+
+| | |
+|--|--|
+| **Dataset download** | Zenodo (DOI forthcoming) — full FLAC stems, worse takes, MIDI, annotations |
+| **Python API** | [`pnlong/jazzsamba`](https://github.com/pnlong/jazzsamba) |
+| **Processing pipeline** | [`pnlong/jazz-standard-dataset`](https://github.com/pnlong/jazz-standard-dataset) — builds the release and exports these web assets |
+
+This site plays **better-take stereo mixes** only (24 kHz / 192 kbps MP3). Stems and worse takes are in the Zenodo download, not here.
 
 ## Local preview
 
+Assets are generated from an assembled `JAZZSAMBA_DIR` in the processing repo:
+
 ```bash
-# from jazz-standard-dataset
+# in jazz-standard-dataset
 uv run python -m preprocessing.scripts.export_project_page_assets
 cd jazzsamba-demo && python -m http.server 8080
 # open http://127.0.0.1:8080
 ```
 
-Audio encode: better takes only, stereo, 24 kHz, 192 kbps MP3 (~709 MB). Use `--skip-audio` for catalog/JSON only.
+Use `--skip-audio` to refresh catalog / annotations / peaks without re-encoding MP3s.
 
 ## Featured samples
 
-Edit `data/catalog.json` → `featured.async` / `featured.sync` (two `song_id`s each). Re-running the export preserves manually set IDs if you patch after export, or edit the export script’s catalog builder later.
+Edit `data/catalog.json` → `featured.async` and `featured.sync` (two `song_id`s each). Re-running the export keeps manually set IDs.
 
 ## Submodule
 
-This directory is its own git repository, intended as a submodule of `jazz-standard-dataset`. Clone the parent **without** `--recurse-submodules` unless you want the ~700 MB of demo audio.
-
-## Deferred
-
-- Featured song IDs, About story copy, band headshots/bios
-- Zenodo DOI / paper PDF / final BibTeX
-- Enable GitHub Pages on the remote (`Settings → Pages → Deploy from branch main / root`)
+Also checked out under `jazz-standard-dataset/jazzsamba-demo`. Clone the processing repo **without** `--recurse-submodules` unless you want ~760 MB of demo audio.
