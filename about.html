@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About — JazzSAMBA</title>
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/site.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="index.html">Jazz<span>SAMBA</span></a>
+      <nav class="nav" aria-label="Primary">
+        <a data-page="home" href="index.html">Home</a>
+        <a data-page="explore" href="explore.html">Explore</a>
+        <a data-page="about" href="about.html">About</a>
+        <a data-page="band" href="band.html">The Band</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <h1>About the dataset</h1>
+
+    <section class="section">
+      <h2>The story</h2>
+      <div class="placeholder-box">
+        Recording story coming soon — where and when the band tracked these standards,
+        why both async and sync sessions, and how the project grew into a research release.
+        (Placeholder for Phillip to fill in.)
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Two protocols on purpose</h2>
+      <div class="protocol-grid">
+        <article class="protocol-card">
+          <h3><span class="chip chip-async">Async</span> Per-instrument sessions</h3>
+          <p>
+            Musicians record separately. Drums go down first to establish the grid; each
+            instrument has two takes assigned to <strong>better</strong> or <strong>worse</strong>
+            tiers. Mixtures are loudness-normalized composites. Annotations are authored on
+            the better mixture and shared with the worse tier via the same bar grid.
+          </p>
+        </article>
+        <article class="protocol-card">
+          <h3><span class="chip chip-sync">Sync</span> Full band together</h3>
+          <p>
+            The ensemble records two whole-band takes. Better/worse select entire performances
+            (not per stem). Close-mic bleed is expected; the public release includes original
+            stems plus debleeded derived audio. Live timing varies — use the annotated bar grid,
+            not a fixed BPM.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Annotations</h2>
+      <p>
+        Lead sheets seed rough bars, chords, sections, and soloists. A browser lane annotator
+        aligns the bar grid to audio, then edits chords, sections, and soloists in metrical
+        coordinates. Public CSVs ship under each take’s <code>annotations/</code> folder with
+        both metrical and absolute-time fields.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>What this site plays vs what you download</h2>
+      <ul class="contrib-list">
+        <li><strong>On this page:</strong> better-take stereo mixes (compressed for the web) and a read-only annotation viewer.</li>
+        <li><strong>On Zenodo:</strong> full FLAC stems and mixtures, worse takes, GT MIDI, derived AMT/debleed overlays, catalog tables.</li>
+        <li><strong>Not released:</strong> third-party lead sheets and commercial/YouTube reference recordings (URL pointers only in the catalog).</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>People</h2>
+      <p>
+        The combo that recorded JazzSAMBA is on <a href="band.html">The Band</a>.
+        Coauthors from UC San Diego and MIT appear on the <a href="index.html">home</a> author list.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a href="index.html">JazzSAMBA</a> · About
+  </footer>
+  <script src="js/site.js"></script>
+</body>
+</html>

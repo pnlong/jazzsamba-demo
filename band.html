@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Band — JazzSAMBA</title>
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/site.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="index.html">Jazz<span>SAMBA</span></a>
+      <nav class="nav" aria-label="Primary">
+        <a data-page="home" href="index.html">Home</a>
+        <a data-page="explore" href="explore.html">Explore</a>
+        <a data-page="about" href="about.html">About</a>
+        <a data-page="band" href="band.html">The Band</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <h1>The Band</h1>
+    <p class="muted">
+      The musicians who recorded JazzSAMBA. Headshots and short bios will land here —
+      for now, initials stand in for photos. Song-level rosters vary (including which bassist plays).
+    </p>
+    <div class="band-grid" id="band-grid"></div>
+  </main>
+
+  <footer class="site-footer">
+    <a href="index.html">JazzSAMBA</a> · The Band
+  </footer>
+  <script src="js/site.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      JazzSambaSite.renderBand(document.getElementById("band-grid"));
+    });
+  </script>
+</body>
+</html>

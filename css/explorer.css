@@ -1,0 +1,239 @@
+/* Read-only explorer timeline (light theme) */
+
+.explorer-layout {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) 1fr;
+  gap: 1rem;
+  min-height: calc(100vh - 8rem);
+}
+
+@media (max-width: 860px) {
+  .explorer-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.explorer-sidebar {
+  background: var(--bg-elevated);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: calc(100vh - 8rem);
+  position: sticky;
+  top: calc(var(--nav-h) + 0.5rem);
+}
+
+.explorer-sidebar label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-bottom: 0.25rem;
+}
+
+.explorer-sidebar select,
+.explorer-sidebar input[type="search"] {
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+}
+
+.song-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+  border-top: 1px solid var(--rule);
+}
+
+.song-list li button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 0.55rem 0.4rem;
+  border-bottom: 1px solid var(--rule);
+  cursor: pointer;
+  font: inherit;
+  color: var(--ink);
+}
+
+.song-list li button:hover,
+.song-list li button.active {
+  background: var(--sea-soft);
+}
+
+.song-list .title {
+  display: block;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.song-list .meta {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+
+.explorer-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.explorer-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 0.75rem 0.9rem;
+}
+
+.explorer-toolbar h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  flex: 1;
+}
+
+.transport {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.transport button {
+  border: 1px solid var(--rule);
+  background: #fff;
+  color: var(--ink);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.transport button:hover {
+  border-color: var(--ink);
+}
+
+.transport input[type="range"] {
+  flex: 1;
+  min-width: 120px;
+}
+
+#time-display {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  min-width: 7.5rem;
+}
+
+#timeline-editor {
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 360px;
+}
+
+#waveform-wrap {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 1px solid var(--rule);
+  background: #f7f3ea;
+  cursor: crosshair;
+}
+
+#waveform {
+  display: block;
+  height: 96px;
+}
+
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  pointer-events: none;
+  z-index: 5;
+}
+
+#lanes-panel {
+  overflow: auto;
+  flex: 1;
+  min-height: 220px;
+  background: #fffcf7;
+}
+
+#lanes {
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.lane {
+  display: flex;
+  border-bottom: 1px solid var(--rule);
+  min-height: 40px;
+}
+
+.lane-label {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  width: 96px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  background: #fffcf7;
+  box-shadow: 1px 0 0 var(--rule);
+}
+
+.lane-track {
+  position: relative;
+  flex: 1;
+  min-height: 36px;
+}
+
+.block {
+  position: absolute;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.35rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+.explorer-status {
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+}
+
+.explorer-page .site-main {
+  max-width: 1280px;
+}

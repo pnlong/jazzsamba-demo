@@ -1,0 +1,156 @@
+/* Page-specific layout helpers */
+
+.hero {
+  padding: 1rem 0 0.5rem;
+  animation: rise 520ms ease both;
+}
+
+.hero-pitch {
+  font-size: 1.15rem;
+  max-width: 40rem;
+  color: var(--ink-muted);
+}
+
+.authors {
+  font-size: 0.98rem;
+  line-height: 1.7;
+  max-width: 46rem;
+}
+
+.affil-legend {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  margin-top: 0.5rem;
+}
+
+.affil-legend ol {
+  margin: 0.35rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.sample-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.sample-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--shadow);
+  transition: transform 180ms ease;
+}
+
+.sample-card:hover {
+  transform: translateY(-2px);
+}
+
+.sample-card h3 {
+  margin-bottom: 0.25rem;
+}
+
+.sample-card audio {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.sample-card.empty {
+  opacity: 0.75;
+}
+
+.band-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.1rem;
+}
+
+.band-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-align: center;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.band-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+.band-photo {
+  aspect-ratio: 1;
+  background: linear-gradient(145deg, var(--sea-soft), var(--sand));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--ink);
+}
+
+.band-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.band-meta {
+  padding: 0.85rem 0.75rem 1.1rem;
+}
+
+.band-meta .instrument {
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}
+
+.protocol-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.protocol-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 1.15rem 1.2rem;
+}
+
+.protocol-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cite-box {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  background: #1a2e34;
+  color: #e8efe9;
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.contrib-list {
+  padding-left: 1.2rem;
+}
+
+.contrib-list li {
+  margin-bottom: 0.45rem;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

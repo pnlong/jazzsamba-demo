@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JazzSAMBA — Dual-protocol jazz combo dataset</title>
+  <meta name="description" content="JazzSAMBA: synchronous and asynchronous multi-take band audio of jazz standards with stem FLACs and bar-grid annotations." />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/site.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="index.html">Jazz<span>SAMBA</span></a>
+      <nav class="nav" aria-label="Primary">
+        <a data-page="home" href="index.html">Home</a>
+        <a data-page="explore" href="explore.html">Explore</a>
+        <a data-page="about" href="about.html">About</a>
+        <a data-page="band" href="band.html">The Band</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <section class="hero">
+      <h1>JazzSAMBA</h1>
+      <p class="hero-pitch">
+        A multitrack dataset of jazz standards recorded both <strong>asynchronously</strong>
+        (per-instrument sessions) and <strong>synchronously</strong> (full band together),
+        with timed bar, chord, section, and soloist annotations for live music models.
+      </p>
+      <p class="authors" id="author-list"></p>
+      <div class="affil-legend muted" id="affil-legend"></div>
+
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#samples">Listen</a>
+        <a class="btn btn-ghost" href="explore.html">Explore</a>
+        <a class="btn btn-secondary" data-link="zenodo" href="#">Download</a>
+        <a class="btn btn-secondary" data-link="paper" href="#">Paper</a>
+        <a class="btn btn-secondary" data-link="code" href="https://github.com/pnlong/jazz-standard-dataset">Code</a>
+      </div>
+    </section>
+
+    <div class="stats" aria-label="Corpus statistics">
+      <div class="stat"><strong id="stat-songs">76</strong><span>songs</span></div>
+      <div class="stat"><strong id="stat-async">50</strong><span>async</span></div>
+      <div class="stat"><strong id="stat-sync">26</strong><span>sync</span></div>
+      <div class="stat"><strong id="stat-musicians">8</strong><span>musicians</span></div>
+    </div>
+
+    <section class="section">
+      <h2>Why JazzSAMBA</h2>
+      <p>
+        Interactive accompaniment and multitrack MIR need realistic combo audio with
+        reliable structure labels. JazzSAMBA pairs original studio performances with a
+        shared bar grid, better/worse take tiers, and public stem FLACs on Zenodo.
+      </p>
+      <ul class="contrib-list">
+        <li>Dual recording protocols on the same repertoire (async vs sync).</li>
+        <li>Per-song better/worse take pairs at mixture and stem level.</li>
+        <li>Multi-layer annotations (bars, chords, sections, soloists) on a bar grid.</li>
+        <li>Ground-truth MIDI for piano (and drums on async); derived AMT/debleed marked clearly.</li>
+      </ul>
+    </section>
+
+    <hr class="section-rule" />
+
+    <section class="section" id="samples">
+      <h2>Featured mixes</h2>
+      <p class="muted">
+        Better-take stereo MP3s for the site (24&nbsp;kHz / 192&nbsp;kbps). Full stems and worse takes ship in the dataset download.
+        Two async and two sync slots — song picks TBD.
+      </p>
+      <div class="sample-grid" id="featured-samples"></div>
+    </section>
+
+    <hr class="section-rule" />
+
+    <section class="section">
+      <h2>Cite</h2>
+      <div class="cite-box">@inproceedings{jazzsamba,
+  title={JazzSAMBA: A Synchronous and Asynchronous Multi-take Band Audio Dataset of Jazz Standards for Live Music Models},
+  author={Long, Phillip and Nguyen, Jacob and Hosto, Jace and Hosto, Gage and Takazawa, Jett and Nofal, Fares and Stade, Sebastian and Shikarpur, Nithya and McAuley, Julian and Huang, Cheng-Zhi Anna and Ma, Aleksandra Teng and Brade, Stephen},
+  note={DOI and venue forthcoming},
+  year={2026}
+}</div>
+      <p class="muted" style="margin-top:0.75rem">Zenodo DOI and camera-ready BibTeX will replace this placeholder.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    JazzSAMBA project page · <a data-link="code" href="https://github.com/pnlong/jazz-standard-dataset">Code</a>
+  </footer>
+
+  <script src="js/site.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>
