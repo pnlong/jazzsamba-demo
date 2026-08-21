@@ -12,7 +12,7 @@ Live site: [pnlong.github.io/jazzsamba-demo](https://pnlong.github.io/jazzsamba-
 | **Python API** | [`pnlong/jazzsamba`](https://github.com/pnlong/jazzsamba) |
 | **Processing pipeline** | [`pnlong/jazz-standard-dataset`](https://github.com/pnlong/jazz-standard-dataset) — builds the release and exports these web assets |
 
-This site plays **better-take stereo mixes** (24 kHz / 192 kbps MP3). Featured home samples also include instrument stems. Full-corpus stems and worse takes are in the Zenodo download.
+This site plays **better-take stereo mixes** (24 kHz / 192 kbps MP3). Featured home samples are **1-minute previews** (mix + stems); open Explore for full takes. Full-corpus stems and worse takes are in the Zenodo download.
 
 ## Local preview
 

@@ -61,10 +61,9 @@
             <h3>${song.title}</h3>
             <div class="mix-block">
               <span class="stem-label">Mixture</span>
-              <audio controls preload="none" src="${song.audio_url}"></audio>
+              <audio controls preload="none" src="${song.preview_audio_url || song.audio_url}"></audio>
             </div>
             ${renderStems(song.stems)}
-            <p><a href="explore.html?song_id=${song.song_id}">Open in explorer</a></p>
           </article>`;
       })
       .join("");

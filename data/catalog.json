@@ -16,7 +16,8 @@
       51,
       63
     ],
-    "note": "Lullaby of Birdland, Blue Bossa (async); Amazing Grace, La Vie en Rose (sync)."
+    "note": "Lullaby of Birdland, Blue Bossa (async); Amazing Grace, La Vie en Rose (sync).",
+    "preview_seconds": 60.0
   },
   "musicians": [
     {
@@ -220,31 +221,32 @@
       "audio_url": "audio/async/07-blue_bossa/better/mixture.mp3",
       "peaks_url": "data/peaks/async/07-blue_bossa.json",
       "annotations_url": "data/annotations/async/07-blue_bossa.json",
+      "preview_audio_url": "audio/async/07-blue_bossa/better/preview/mixture.mp3",
       "stems": [
         {
           "id": "drums",
           "label": "Drums",
-          "url": "audio/async/07-blue_bossa/better/stems/drums.mp3"
+          "url": "audio/async/07-blue_bossa/better/preview/stems/drums.mp3"
         },
         {
           "id": "bass",
           "label": "Bass",
-          "url": "audio/async/07-blue_bossa/better/stems/bass.mp3"
+          "url": "audio/async/07-blue_bossa/better/preview/stems/bass.mp3"
         },
         {
           "id": "piano",
           "label": "Piano",
-          "url": "audio/async/07-blue_bossa/better/stems/piano.mp3"
+          "url": "audio/async/07-blue_bossa/better/preview/stems/piano.mp3"
         },
         {
           "id": "trumpet",
           "label": "Trumpet",
-          "url": "audio/async/07-blue_bossa/better/stems/trumpet.mp3"
+          "url": "audio/async/07-blue_bossa/better/preview/stems/trumpet.mp3"
         },
         {
           "id": "saxophone_alto",
           "label": "Alto Saxophone",
-          "url": "audio/async/07-blue_bossa/better/stems/saxophone_alto.mp3"
+          "url": "audio/async/07-blue_bossa/better/preview/stems/saxophone_alto.mp3"
         }
       ]
     },
@@ -607,31 +609,32 @@
       "audio_url": "audio/async/25-lullaby_of_birdland/better/mixture.mp3",
       "peaks_url": "data/peaks/async/25-lullaby_of_birdland.json",
       "annotations_url": "data/annotations/async/25-lullaby_of_birdland.json",
+      "preview_audio_url": "audio/async/25-lullaby_of_birdland/better/preview/mixture.mp3",
       "stems": [
         {
           "id": "drums",
           "label": "Drums",
-          "url": "audio/async/25-lullaby_of_birdland/better/stems/drums.mp3"
+          "url": "audio/async/25-lullaby_of_birdland/better/preview/stems/drums.mp3"
         },
         {
           "id": "bass",
           "label": "Bass",
-          "url": "audio/async/25-lullaby_of_birdland/better/stems/bass.mp3"
+          "url": "audio/async/25-lullaby_of_birdland/better/preview/stems/bass.mp3"
         },
         {
           "id": "piano",
           "label": "Piano",
-          "url": "audio/async/25-lullaby_of_birdland/better/stems/piano.mp3"
+          "url": "audio/async/25-lullaby_of_birdland/better/preview/stems/piano.mp3"
         },
         {
           "id": "trumpet",
           "label": "Trumpet",
-          "url": "audio/async/25-lullaby_of_birdland/better/stems/trumpet.mp3"
+          "url": "audio/async/25-lullaby_of_birdland/better/preview/stems/trumpet.mp3"
         },
         {
           "id": "saxophone_alto",
           "label": "Alto Saxophone",
-          "url": "audio/async/25-lullaby_of_birdland/better/stems/saxophone_alto.mp3"
+          "url": "audio/async/25-lullaby_of_birdland/better/preview/stems/saxophone_alto.mp3"
         }
       ]
     },
@@ -1154,31 +1157,32 @@
       "audio_url": "audio/sync/51-amazing_grace/better/mixture.mp3",
       "peaks_url": "data/peaks/sync/51-amazing_grace.json",
       "annotations_url": "data/annotations/sync/51-amazing_grace.json",
+      "preview_audio_url": "audio/sync/51-amazing_grace/better/preview/mixture.mp3",
       "stems": [
         {
           "id": "drums",
           "label": "Drums",
-          "url": "audio/sync/51-amazing_grace/better/stems/drums.mp3"
+          "url": "audio/sync/51-amazing_grace/better/preview/stems/drums.mp3"
         },
         {
           "id": "kick",
           "label": "Kick",
-          "url": "audio/sync/51-amazing_grace/better/stems/kick.mp3"
+          "url": "audio/sync/51-amazing_grace/better/preview/stems/kick.mp3"
         },
         {
           "id": "bass",
           "label": "Bass",
-          "url": "audio/sync/51-amazing_grace/better/stems/bass.mp3"
+          "url": "audio/sync/51-amazing_grace/better/preview/stems/bass.mp3"
         },
         {
           "id": "piano",
           "label": "Piano",
-          "url": "audio/sync/51-amazing_grace/better/stems/piano.mp3"
+          "url": "audio/sync/51-amazing_grace/better/preview/stems/piano.mp3"
         },
         {
           "id": "trumpet",
           "label": "Trumpet",
-          "url": "audio/sync/51-amazing_grace/better/stems/trumpet.mp3"
+          "url": "audio/sync/51-amazing_grace/better/preview/stems/trumpet.mp3"
         }
       ]
     },
@@ -1421,31 +1425,32 @@
       "audio_url": "audio/sync/63-la_vie_en_rose/better/mixture.mp3",
       "peaks_url": "data/peaks/sync/63-la_vie_en_rose.json",
       "annotations_url": "data/annotations/sync/63-la_vie_en_rose.json",
+      "preview_audio_url": "audio/sync/63-la_vie_en_rose/better/preview/mixture.mp3",
       "stems": [
         {
           "id": "drums",
           "label": "Drums",
-          "url": "audio/sync/63-la_vie_en_rose/better/stems/drums.mp3"
+          "url": "audio/sync/63-la_vie_en_rose/better/preview/stems/drums.mp3"
         },
         {
           "id": "kick",
           "label": "Kick",
-          "url": "audio/sync/63-la_vie_en_rose/better/stems/kick.mp3"
+          "url": "audio/sync/63-la_vie_en_rose/better/preview/stems/kick.mp3"
         },
         {
           "id": "bass",
           "label": "Bass",
-          "url": "audio/sync/63-la_vie_en_rose/better/stems/bass.mp3"
+          "url": "audio/sync/63-la_vie_en_rose/better/preview/stems/bass.mp3"
         },
         {
           "id": "piano",
           "label": "Piano",
-          "url": "audio/sync/63-la_vie_en_rose/better/stems/piano.mp3"
+          "url": "audio/sync/63-la_vie_en_rose/better/preview/stems/piano.mp3"
         },
         {
           "id": "saxophone_alto",
           "label": "Alto Saxophone",
-          "url": "audio/sync/63-la_vie_en_rose/better/stems/saxophone_alto.mp3"
+          "url": "audio/sync/63-la_vie_en_rose/better/preview/stems/saxophone_alto.mp3"
         }
       ]
     },
