@@ -1269,11 +1269,6 @@
           "url": "audio/sync/51-amazing_grace/better/preview/stems/drums.mp3"
         },
         {
-          "id": "kick",
-          "label": "Kick",
-          "url": "audio/sync/51-amazing_grace/better/preview/stems/kick.mp3"
-        },
-        {
           "id": "bass",
           "label": "Bass",
           "url": "audio/sync/51-amazing_grace/better/preview/stems/bass.mp3"
@@ -1559,11 +1554,6 @@
           "id": "drums",
           "label": "Drums",
           "url": "audio/sync/63-la_vie_en_rose/better/preview/stems/drums.mp3"
-        },
-        {
-          "id": "kick",
-          "label": "Kick",
-          "url": "audio/sync/63-la_vie_en_rose/better/preview/stems/kick.mp3"
         },
         {
           "id": "bass",
