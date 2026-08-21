@@ -173,16 +173,16 @@
     ctx.clearRect(0, 0, w, 96);
 
     // Label gutter (matches lane labels)
-    ctx.fillStyle = "#fffcf7";
+    ctx.fillStyle = "#faf8f5";
     ctx.fillRect(0, 0, LABEL_W, 96);
-    ctx.strokeStyle = "rgba(22,53,63,0.12)";
+    ctx.strokeStyle = "rgba(28,19,21,0.12)";
     ctx.beginPath();
     ctx.moveTo(LABEL_W + 0.5, 0);
     ctx.lineTo(LABEL_W + 0.5, 96);
     ctx.stroke();
 
     if (!peaks?.peaks?.length) return;
-    ctx.fillStyle = "#3d8a86";
+    ctx.fillStyle = "#c81d1a";
     const mid = 48;
     const arr = peaks.peaks;
     const tw = trackWidth();
@@ -195,7 +195,7 @@
       ctx.fillRect(x0, top, Math.max(1, x1 - x0), Math.max(1, bot - top));
     }
     const bars = annotations?.bars || [];
-    ctx.strokeStyle = "rgba(22,53,63,0.22)";
+    ctx.strokeStyle = "rgba(28,19,21,0.2)";
     ctx.lineWidth = 1;
     bars.forEach((b) => {
       const x = tToX(parseFloat(b.start_time));

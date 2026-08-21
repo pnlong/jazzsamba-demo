@@ -6,20 +6,21 @@
 }
 
 .hero-pitch {
-  font-size: 1.15rem;
-  max-width: 40rem;
-  color: var(--ink-muted);
+  font-size: 1.1rem;
+  max-width: var(--measure);
+  color: var(--text-muted);
+  line-height: 1.65;
 }
 
 .authors {
   font-size: 0.98rem;
   line-height: 1.7;
-  max-width: 46rem;
+  max-width: var(--measure);
 }
 
 .affil-legend {
   font-size: 0.85rem;
-  color: var(--ink-muted);
+  color: var(--text-muted);
   margin-top: 0.5rem;
 }
 
@@ -39,8 +40,8 @@
 }
 
 .sample-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius);
   padding: 1rem;
   box-shadow: var(--shadow);
@@ -71,7 +72,7 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: var(--ink-muted);
+  color: var(--text-muted);
 }
 
 .stem-row,
@@ -84,7 +85,7 @@
 .stem-label {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--text-primary);
 }
 
 .sample-card.empty {
@@ -98,8 +99,8 @@
 }
 
 .band-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius);
   overflow: hidden;
   text-align: center;
@@ -113,13 +114,13 @@
 
 .band-photo {
   aspect-ratio: 1;
-  background: linear-gradient(145deg, var(--sea-soft), var(--sand));
+  background: linear-gradient(145deg, var(--gold-soft), var(--vermilion-soft));
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
   font-size: 2rem;
-  color: var(--ink);
+  color: var(--text-primary);
 }
 
 .band-photo img {
@@ -134,7 +135,7 @@
 
 .band-meta .instrument {
   font-size: 0.9rem;
-  color: var(--ink-muted);
+  color: var(--text-muted);
 }
 
 .protocol-grid {
@@ -144,8 +145,8 @@
 }
 
 .protocol-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius);
   padding: 1.15rem 1.2rem;
 }
@@ -156,11 +157,15 @@
   gap: 0.5rem;
 }
 
+.protocol-card p {
+  max-width: none;
+}
+
 .cite-box {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.82rem;
-  background: #1a2e34;
-  color: #e8efe9;
+  background: var(--text-primary);
+  color: var(--bg-main);
   padding: 1rem 1.1rem;
   border-radius: var(--radius);
   overflow-x: auto;
@@ -170,15 +175,17 @@
 .story-quote {
   margin: 0.35rem 0 0;
   padding: 1.15rem 1.35rem 1.25rem 1.4rem;
-  background: linear-gradient(135deg, #faf7f0 0%, #eef6f4 100%);
-  border: 1px solid var(--rule);
-  border-left: 4px solid var(--sea);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--brand-primary);
   border-radius: 0 var(--radius) var(--radius) 0;
+  max-width: var(--measure);
 }
 
 .story-quote p {
   margin: 0 0 0.95rem;
-  color: var(--ink);
+  color: var(--text-primary);
+  max-width: none;
 }
 
 .story-quote p:last-of-type {
@@ -191,11 +198,12 @@
   font-family: var(--font-display);
   font-size: 1.05rem;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--text-primary);
 }
 
 .contrib-list {
   padding-left: 1.2rem;
+  max-width: var(--measure);
 }
 
 .contrib-list li {

@@ -105,21 +105,21 @@
   }
 
   const LANE_PALETTES = {
-    sections: [174, 42],
-    chords: [18, 55],
-    soloists: [200, 40],
+    sections: [38, 72],
+    chords: [8, 68],
+    soloists: [22, 55],
   };
 
   function blockStyle(laneKey, index) {
-    const pal = LANE_PALETTES[laneKey] || [174, 40];
+    const pal = LANE_PALETTES[laneKey] || [38, 60];
     const [h, s] = pal;
     const light = index % 2 === 0;
-    const l = light ? 88 : 78;
+    const l = light ? 88 : 80;
     const borderL = light ? 62 : 52;
     return {
       background: `hsl(${h} ${s}% ${l}%)`,
       border: `1px solid hsl(${h} ${Math.max(20, s - 8)}% ${borderL}%)`,
-      color: "#16353f",
+      color: "#1c1315",
     };
   }
 
