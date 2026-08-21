@@ -167,6 +167,33 @@
   white-space: pre-wrap;
 }
 
+.story-quote {
+  margin: 0.35rem 0 0;
+  padding: 1.15rem 1.35rem 1.25rem 1.4rem;
+  background: linear-gradient(135deg, #faf7f0 0%, #eef6f4 100%);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--sea);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.story-quote p {
+  margin: 0 0 0.95rem;
+  color: var(--ink);
+}
+
+.story-quote p:last-of-type {
+  margin-bottom: 1.1rem;
+}
+
+.story-attrib {
+  margin: 0;
+  text-align: right;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
 .contrib-list {
   padding-left: 1.2rem;
 }
