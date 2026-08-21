@@ -165,8 +165,33 @@
     titleCaseWords,
   };
 
+  function wireMobileNav() {
+    const toggle = document.getElementById("nav-toggle");
+    const nav = document.getElementById("site-nav");
+    if (!toggle || !nav) return;
+
+    function setOpen(open) {
+      nav.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    }
+
+    toggle.addEventListener("click", () => {
+      setOpen(!nav.classList.contains("is-open"));
+    });
+
+    nav.querySelectorAll("a").forEach((a) => {
+      a.addEventListener("click", () => setOpen(false));
+    });
+
+    window.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape") setOpen(false);
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     markCurrentNav();
     wireCodeLinks();
+    wireMobileNav();
   });
 })(window);
