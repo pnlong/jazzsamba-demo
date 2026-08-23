@@ -708,7 +708,7 @@ body.filter-modal-open {
   overflow-y: hidden;
   height: 14px;
   border-top: 1px solid var(--border-subtle);
-  background: var(--bg-card);
+  background: var(--bg-main);
 }
 
 .timeline-scroll-spacer {
@@ -797,12 +797,13 @@ body.filter-modal-open {
   flex: 1 1 auto;
   min-height: 0;
   height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .lane-track-inner {
   position: relative;
-  height: 100%;
-  min-height: 0;
+  flex-shrink: 0;
 }
 
 .block {

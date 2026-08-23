@@ -819,15 +819,26 @@
     return Math.floor((h - 2) / LANE_COUNT);
   }
 
+  function centerLayoutsInTrack(layouts, blockHeight, rowHeight) {
+    if (!layouts.length || !rowHeight) return layouts;
+    const minTop = Math.min(...layouts.map((l) => l.top));
+    const maxBottom = Math.max(...layouts.map((l) => l.top + blockHeight));
+    const contentH = maxBottom - minTop;
+    const offset = Math.round((rowHeight - contentH) / 2) - minTop;
+    if (offset === 0) return layouts;
+    return layouts.map((l) => ({ ...l, top: l.top + offset }));
+  }
+
   function scaleLaneLayout(items, targetTrackHeight) {
     const baseBlockH = 28;
     const baseGap = 4;
     const baseTop = 4;
     const maxBlockH = 72;
+    const target =
+      targetTrackHeight && targetTrackHeight > 0 ? targetTrackHeight : null;
 
     if (!items.length) {
-      const emptyH = targetTrackHeight && targetTrackHeight > 0 ? targetTrackHeight : 36;
-      return { layouts: [], blockHeight: baseBlockH, laneHeight: emptyH };
+      return { layouts: [], blockHeight: baseBlockH, innerHeight: target || 36 };
     }
 
     let blockHeight = baseBlockH;
@@ -835,9 +846,6 @@
     let topPad = baseTop;
     let scaled = metrical.layoutSublanes(items, blockHeight, gap, topPad);
     let contentH = scaled.trackHeight;
-
-    const target =
-      targetTrackHeight && targetTrackHeight > 0 ? targetTrackHeight : null;
 
     if (target) {
       if (contentH > target) {
@@ -865,17 +873,19 @@
           contentH = scaled.trackHeight;
         }
       }
-      return {
-        layouts: scaled.layouts,
-        blockHeight,
-        laneHeight: target,
-      };
     }
 
+    let layouts = target
+      ? centerLayoutsInTrack(scaled.layouts, blockHeight, target)
+      : scaled.layouts;
+    const innerHeight = layouts.length
+      ? Math.max(...layouts.map((l) => l.top + blockHeight))
+      : Math.max(36, contentH);
+
     return {
-      layouts: scaled.layouts,
+      layouts,
       blockHeight,
-      laneHeight: Math.max(36, contentH),
+      innerHeight,
     };
   }
 
@@ -896,8 +906,8 @@
 
     const bars = annotations.bars || [];
     const items = metrical.assignSublanes(rows || [], bars);
-    const { layouts, laneHeight, blockHeight } = scaleLaneLayout(items, targetTrackHeight);
-    inner.style.height = `${laneHeight}px`;
+    const { layouts, innerHeight, blockHeight } = scaleLaneLayout(items, targetTrackHeight);
+    inner.style.height = `${innerHeight}px`;
 
     const colorIdx = new Map();
     const rowIndex = new Map();
