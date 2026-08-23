@@ -59,12 +59,16 @@
     let playbackContext = null;
     const listeners = new Set();
 
-    function ensureAudioContext() {
+    async function ensureAudioContext() {
       if (!playbackContext || playbackContext.state === "closed") {
         playbackContext = new AudioContext();
       }
       if (playbackContext.state === "suspended" || playbackContext.state === "interrupted") {
-        playbackContext.resume().catch(() => {});
+        try {
+          await playbackContext.resume();
+        } catch (_) {
+          /* ignore resume errors */
+        }
       }
       return playbackContext;
     }
@@ -86,10 +90,12 @@
       getAudioContext: () =>
         playbackContext && playbackContext.state !== "closed" ? playbackContext : null,
       timelineToContextTime(t) {
-        if (audio().paused || !playbackContext || playbackContext.state !== "running") return null;
+        const a = audio();
+        if (!a || a.paused || !playbackContext || playbackContext.state === "closed") return null;
         const timelineT = Number(t);
         if (!Number.isFinite(timelineT)) return null;
-        return playbackContext.currentTime + (timelineT - (audio().currentTime || 0));
+        const audioT = Number.isFinite(a.currentTime) ? a.currentTime : 0;
+        return playbackContext.currentTime + (timelineT - audioT);
       },
       onTransportChange(cb) {
         if (typeof cb !== "function") return () => {};
@@ -412,16 +418,6 @@
     return annFlagTrue(row, key);
   }
 
-  function buildAnnotationPositionLine(row) {
-    const parts = [`bars ${row.start_bar}–${row.end_bar}`];
-    if (detailTruthy(row.start_time) && detailTruthy(row.end_time)) {
-      parts.push(
-        `${fmt(parseFloat(row.start_time))}–${fmt(parseFloat(row.end_time))}`
-      );
-    }
-    return parts.join(" · ");
-  }
-
   function buildSectionHierarchyLine(row) {
     const parts = [];
     const top = titleCaseWords(row.top_level_section || "");
@@ -507,10 +503,6 @@
     return parts.join(" · ");
   }
 
-  function buildChordPositionLine(row) {
-    return buildAnnotationPositionLine(row);
-  }
-
   function buildSectionDetailHtml(row) {
     const parts = [];
 
@@ -526,8 +518,6 @@
     parts.push(
       detailTagRow("Playing", buildSectionMusiciansTagsHtml(row.section_index))
     );
-
-    parts.push(detailRow("Position", buildAnnotationPositionLine(row)));
 
     return `<dl class="ann-detail ann-detail-section">${parts.filter(Boolean).join("")}</dl>`;
   }
@@ -562,8 +552,6 @@
     parts.push(
       detailTagRow("Alterations", chordTagsHtml(row, CHORD_ALTERATION_TAGS))
     );
-
-    parts.push(detailRow("Position", buildChordPositionLine(row)));
 
     return `<dl class="ann-detail ann-detail-chord">${parts.filter(Boolean).join("")}</dl>`;
   }
@@ -1097,7 +1085,7 @@
     metronomeBtn().addEventListener(
       "click",
       () => {
-        metroTransport.ensureAudioContext();
+        void metroTransport.ensureAudioContext();
       },
       true
     );
@@ -1107,7 +1095,7 @@
       if (a.paused) {
         followPlayhead = true;
         updateFollowUI();
-        metroTransport.ensureAudioContext();
+        await metroTransport.ensureAudioContext();
         try {
           await a.play();
         } catch (_) {
@@ -1170,10 +1158,13 @@
       metroTransport.notify("pause");
     });
     audio().addEventListener("play", () => {
-      updatePlayPauseUI();
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(syncPlayhead);
-      metroTransport.notify("play");
+      void (async () => {
+        await metroTransport.ensureAudioContext();
+        updatePlayPauseUI();
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(syncPlayhead);
+        metroTransport.notify("play");
+      })();
     });
     audio().addEventListener("ended", () => {
       updatePlayPauseUI();

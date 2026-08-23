@@ -93,7 +93,9 @@ function createMetronomeUI({
     const ctx = transport?.getAudioContext?.();
     if (!ctx || !ensureBuffers(ctx)) return;
     const when = transport.timelineToContextTime(beat.t);
-    if (when == null || when < ctx.currentTime - 0.02) return;
+    if (when == null) return;
+    const minWhen = ctx.currentTime + 0.002;
+    const startWhen = when < minWhen ? minWhen : when;
     const source = ctx.createBufferSource();
     source.buffer = beat.accent ? accentBuf : tickBuf;
     const gain = ctx.createGain();
@@ -101,11 +103,11 @@ function createMetronomeUI({
     source.connect(gain);
     gain.connect(ctx.destination);
     try {
-      source.start(when);
+      source.start(startWhen);
     } catch (_) {
       return;
     }
-    scheduled.push({ source, when });
+    scheduled.push({ source, when: startWhen });
     source.onended = () => {
       scheduled = scheduled.filter(s => s.source !== source);
     };
@@ -187,7 +189,13 @@ function createMetronomeUI({
 
   if (buttonEl) {
     buttonEl.addEventListener('click', () => {
-      setEnabled(!enabled);
+      void (async () => {
+        const next = !enabled;
+        if (next && transport?.ensureAudioContext) {
+          await Promise.resolve(transport.ensureAudioContext());
+        }
+        setEnabled(next);
+      })();
     });
   }
   wireTransport();
