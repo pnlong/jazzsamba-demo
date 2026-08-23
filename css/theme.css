@@ -36,7 +36,6 @@
   --max: 1080px;
   --nav-h: 4rem;
   --shadow: 0 6px 18px rgba(28, 19, 21, 0.06);
-  --measure: 68ch;
 }
 
 *,
@@ -106,7 +105,6 @@ h3 {
 p {
   margin: 0 0 1rem;
   color: var(--text-primary);
-  max-width: var(--measure);
 }
 
 .muted {
@@ -361,11 +359,6 @@ p {
   margin: 2.75rem 0;
 }
 
-.section > p,
-.section .muted {
-  max-width: var(--measure);
-}
-
 .section-rule {
   height: 1px;
   background: var(--border-subtle);
@@ -379,5 +372,4 @@ p {
   padding: 1.25rem;
   background: var(--bg-card);
   color: var(--text-muted);
-  max-width: var(--measure);
 }

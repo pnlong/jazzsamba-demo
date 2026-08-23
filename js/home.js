@@ -48,8 +48,10 @@
         if (!song) {
           return `
             <article class="sample-card empty">
-              <span class="chip ${chip}">${label}</span>
-              <h3>Featured song TBD</h3>
+              <div class="sample-card-head">
+                <h3>Featured song TBD</h3>
+                <span class="chip ${chip}">${label}</span>
+              </div>
               <p class="muted">Set <code>featured.${protocol}</code> song_id in <code>data/catalog.json</code>${
                 slot == null ? "" : ` (current: ${slot})`
               }.</p>
@@ -57,8 +59,10 @@
         }
         return `
           <article class="sample-card">
-            <span class="chip ${chip}">${label}</span>
-            <h3>${song.title}</h3>
+            <div class="sample-card-head">
+              <h3>${song.title}</h3>
+              <span class="chip ${chip}">${label}</span>
+            </div>
             <div class="mix-block">
               <span class="stem-label">Mixture</span>
               <audio controls preload="none" src="${song.preview_audio_url || song.audio_url}"></audio>
