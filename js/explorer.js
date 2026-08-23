@@ -361,8 +361,10 @@
       .filter((m) => String(m.section_index) === String(sectionIndex))
       .map((m) => {
         const id = parseInt(m.musician_id, 10);
-        const name = musiciansById[id]?.name || `id ${id}`;
-        return `${name} (${id}) · ${titleCaseInstrument(m.instrument)}`;
+        const catalog = musiciansById[id];
+        const name = catalog?.name || `id ${id}`;
+        const inst = m.instrument || catalog?.instrument || "";
+        return `${name} (${titleCaseInstrument(inst)})`;
       });
   }
 
