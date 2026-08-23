@@ -32,18 +32,62 @@
   <main class="site-main">
     <div class="explorer-layout">
       <aside class="explorer-sidebar">
-        <div>
-          <label for="protocol-filter">Protocol</label>
-          <select id="protocol-filter">
-            <option value="all">All</option>
-            <option value="async">Asynchronous</option>
-            <option value="sync">Synchronous</option>
-          </select>
+        <div class="filter-group">
+          <p class="filter-group-label">Recording</p>
+          <div class="filter-field">
+            <label for="protocol-filter">Protocol</label>
+            <select id="protocol-filter">
+              <option value="all">All</option>
+              <option value="async">Asynchronous</option>
+              <option value="sync">Synchronous</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="musician-filter">Musician</label>
+            <select id="musician-filter">
+              <option value="all">All</option>
+            </select>
+          </div>
         </div>
-        <div>
-          <label for="song-search">Search</label>
-          <input id="song-search" type="search" placeholder="Title, artist, id…" />
+        <div class="filter-group">
+          <div class="filter-group-head">
+            <p class="filter-group-label">Repertoire</p>
+            <button type="button" class="filter-reset" id="filter-reset">Reset</button>
+          </div>
+          <div class="filter-field">
+            <label for="genre-filter">Genre</label>
+            <select id="genre-filter">
+              <option value="all">All</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="form-filter">Form</label>
+            <select id="form-filter">
+              <option value="all">All</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="key-filter">Key</label>
+            <select id="key-filter">
+              <option value="all">All</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="time-filter">Time signature</label>
+            <select id="time-filter">
+              <option value="all">All</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="swung-filter">Rhythm</label>
+            <select id="swung-filter">
+              <option value="all">All</option>
+              <option value="True">Swung</option>
+              <option value="False">Straight</option>
+            </select>
+          </div>
         </div>
+        <p class="song-list-label" id="song-list-count"></p>
         <ul class="song-list" id="song-list"></ul>
       </aside>
 
