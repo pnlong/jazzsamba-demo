@@ -652,7 +652,7 @@
   function waveformHeight() {
     const wrap = waveformWrap();
     const h = wrap?.clientHeight || 0;
-    return Math.max(120, h);
+    return h > 0 ? h : 120;
   }
 
   function drawWaveform() {
@@ -704,11 +704,13 @@
 
   function wireTimelineResize() {
     const editor = document.getElementById("timeline-editor");
+    const wrap = waveformWrap();
     if (!editor || editor._resizeObs) return;
     const ro = new ResizeObserver(() => {
       if (duration > 0) drawWaveform();
     });
     ro.observe(editor);
+    if (wrap) ro.observe(wrap);
     editor._resizeObs = ro;
   }
 

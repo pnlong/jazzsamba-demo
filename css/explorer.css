@@ -95,7 +95,7 @@ body.explorer-page {
     min-height: 220px;
   }
 
-  #waveform {
+  #waveform-wrap {
     min-height: 96px;
   }
 }
@@ -589,16 +589,18 @@ body.filter-modal-open {
   overflow-x: auto;
   overflow-y: hidden;
   flex: 2 1 0;
-  min-height: 0;
+  min-height: 120px;
   border-bottom: 1px solid var(--border-subtle);
   background: #f3ebe0;
   cursor: crosshair;
+  display: flex;
+  align-items: stretch;
 }
 
 #waveform {
   display: block;
   height: 100%;
-  min-height: 120px;
+  min-height: 100%;
 }
 
 .playhead {
