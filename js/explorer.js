@@ -649,6 +649,71 @@
     }
   }
 
+  function seekToTime(t) {
+    const clamped = Math.max(0, Math.min(duration, t));
+    audio().currentTime = clamped;
+    followPlayhead = true;
+    updateFollowUI();
+    syncPlayhead();
+    scrollToTime(clamped, true);
+    metroTransport?.notify("seek", { t: clamped });
+  }
+
+  function topLevelSectionSeekMarkers() {
+    const rows = annotations?.sections || [];
+    const markers = [];
+    let prevTop = null;
+    for (const row of rows) {
+      let top = row.top_level_section;
+      if (!top || top === "NA") {
+        top = String(row.section || "").split("/")[0].trim();
+      }
+      if (!top || top === prevTop) continue;
+      prevTop = top;
+      const t = parseFloat(row.start_time);
+      if (!Number.isFinite(t) || t < 0) continue;
+      markers.push({ t, label: titleCaseWords(top) });
+    }
+    return markers;
+  }
+
+  function renderSectionSeekMarkers() {
+    const host = document.getElementById("seek-markers");
+    if (!host) return;
+    host.innerHTML = "";
+    const dur = duration;
+    const markers = topLevelSectionSeekMarkers();
+    if (!dur || !markers.length) {
+      host.classList.add("is-empty");
+      return;
+    }
+    host.classList.remove("is-empty");
+    const pinSvg =
+      '<svg class="seek-marker-icon" viewBox="0 0 24 24" aria-hidden="true">'
+      + '<path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5'
+      + 'c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z"/>'
+      + '</svg>';
+    for (const marker of markers) {
+      const t = Number(marker.t);
+      if (!Number.isFinite(t) || t < 0) continue;
+      const pct = Math.max(0, Math.min(100, (t / dur) * 100));
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "seek-marker";
+      btn.style.left = `${pct}%`;
+      const label = String(marker.label || "section");
+      btn.title = `${label} (${fmt(t)})`;
+      btn.setAttribute("aria-label", `Jump to ${label}`);
+      btn.innerHTML = pinSvg;
+      btn.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        seekToTime(t);
+      });
+      host.appendChild(btn);
+    }
+  }
+
   function waveformHeight() {
     const wrap = waveformWrap();
     const h = wrap?.clientHeight || 0;
@@ -705,59 +770,16 @@
   function wireTimelineResize() {
     const editor = document.getElementById("timeline-editor");
     const wrap = waveformWrap();
-    const lanes = lanesPanel();
     if (!editor || editor._resizeObs) return;
-    const onResize = () => {
-      if (duration <= 0) return;
-      drawWaveform();
-      if (annotations) renderLanes();
-    };
-    const ro = new ResizeObserver(onResize);
+    const ro = new ResizeObserver(() => {
+      if (duration > 0) drawWaveform();
+    });
     ro.observe(editor);
     if (wrap) ro.observe(wrap);
-    if (lanes) ro.observe(lanes);
     editor._resizeObs = ro;
   }
 
-  const LANE_COUNT = 3;
-
-  function lanesTargetTrackHeight() {
-    const panel = lanesPanel();
-    if (!panel || panel.clientHeight <= 0) return null;
-    return Math.floor(panel.clientHeight / LANE_COUNT);
-  }
-
-  function scaleLaneLayout(items, targetTrackHeight) {
-    const baseBlockH = 28;
-    const baseGap = 4;
-    const baseTop = 4;
-    const natural = metrical.layoutSublanes(items, baseBlockH, baseGap, baseTop);
-    if (!targetTrackHeight || targetTrackHeight <= 0) {
-      return {
-        layouts: natural.layouts,
-        trackHeight: Math.max(36, natural.trackHeight),
-        blockHeight: baseBlockH,
-      };
-    }
-    const scale = targetTrackHeight / Math.max(natural.trackHeight, 1);
-    const blockHeight = Math.max(16, Math.min(48, Math.round(baseBlockH * scale)));
-    const gap = Math.max(2, Math.round(baseGap * Math.min(scale, 2)));
-    const defaultTop = Math.max(4, Math.round(baseTop * Math.min(scale, 2)));
-    const scaled = metrical.layoutSublanes(items, blockHeight, gap, defaultTop);
-    if (scaled.trackHeight < targetTrackHeight) {
-      const padTop = Math.floor((targetTrackHeight - scaled.trackHeight) / 2);
-      scaled.layouts.forEach((l) => {
-        l.top += padTop;
-      });
-    }
-    return {
-      layouts: scaled.layouts,
-      trackHeight: targetTrackHeight,
-      blockHeight,
-    };
-  }
-
-  function renderLane(name, rows, labelKey, labelFn, laneKey, targetTrackHeight) {
+  function renderLane(name, rows, labelKey, labelFn, laneKey) {
     const lane = document.createElement("div");
     lane.className = "lane";
     const label = document.createElement("span");
@@ -770,12 +792,10 @@
     lane.appendChild(track);
 
     const bars = annotations.bars || [];
+    const blockHeight = 28;
     const items = metrical.assignSublanes(rows || [], bars);
-    const { layouts, trackHeight, blockHeight } = scaleLaneLayout(items, targetTrackHeight);
-    track.style.height = `${trackHeight}px`;
-    if (targetTrackHeight) {
-      lane.style.minHeight = `${targetTrackHeight}px`;
-    }
+    const { layouts, trackHeight } = metrical.layoutSublanes(items, blockHeight, 4, 4);
+    track.style.height = `${Math.max(36, trackHeight)}px`;
 
     const colorIdx = new Map();
     const rowIndex = new Map();
@@ -812,16 +832,14 @@
     lanesEl().innerHTML = "";
     lanesEl().style.width = `${contentWidth()}px`;
     if (!annotations) return;
-    const targetTrackHeight = lanesTargetTrackHeight();
-    renderLane("Sections", annotations.sections || [], "section", null, "sections", targetTrackHeight);
-    renderLane("Chords", annotations.chords || [], "chord", null, "chords", targetTrackHeight);
+    renderLane("Sections", annotations.sections || [], "section", null, "sections");
+    renderLane("Chords", annotations.chords || [], "chord", null, "chords");
     renderLane(
       "Soloists",
       annotations.soloists || [],
       "musician_id",
       (row) => musicianLabel(parseInt(row.musician_id, 10)),
-      "soloists",
-      targetTrackHeight
+      "soloists"
     );
   }
 
@@ -843,6 +861,7 @@
     duration = d;
     drawWaveform();
     renderLanes();
+    renderSectionSeekMarkers();
     syncPlayhead();
   }
 
