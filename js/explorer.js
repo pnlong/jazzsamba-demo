@@ -269,7 +269,7 @@
     container.innerHTML = musicians
       .map(
         (m) =>
-          `<label><input type="checkbox" data-musician-id="${m.musician_id}" checked /> ${musicianLabel(m.musician_id)} · id ${m.musician_id}</label>`
+          `<label><input type="checkbox" data-musician-id="${m.musician_id}" checked /> ${m.name} (${m.musician_id})</label>`
       )
       .join("");
 
@@ -529,7 +529,7 @@
     document.querySelectorAll(".song-list button").forEach((btn) => {
       btn.classList.toggle("active", Number(btn.dataset.songId) === song.song_id);
     });
-    setStatus("Better-take mixture · stems available in the Zenodo download");
+    setStatus("");
     updatePlayPauseUI();
     metronome?.sync?.();
   }
@@ -578,7 +578,7 @@
     if (!currentSong || !songs.some((s) => s.song_id === currentSong.song_id)) {
       loadSong(songs[0]).catch((e) => setStatus(e.message));
     } else {
-      setStatus("Better-take mixture · stems available in the Zenodo download");
+      setStatus("");
     }
   }
 
@@ -588,7 +588,7 @@
     const songs = filteredSongs();
     if (!songs.length) setStatus("No songs match these filters.");
     else if (currentSong && songs.some((s) => s.song_id === currentSong.song_id)) {
-      setStatus("Better-take mixture · stems available in the Zenodo download");
+      setStatus("");
     }
   }
 
