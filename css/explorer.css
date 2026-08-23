@@ -15,7 +15,7 @@ body.explorer-page {
   flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
-  padding: 0.75rem 1.25rem 0;
+  padding: 0.75rem 1.25rem 0.5rem;
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
@@ -37,6 +37,7 @@ body.explorer-page {
   min-height: 0;
   height: 100%;
   align-items: stretch;
+  margin-bottom: 0.5rem;
 }
 
 @media (max-width: 860px) {
@@ -46,7 +47,7 @@ body.explorer-page {
   }
 
   .explorer-page .site-main {
-    padding: 0.5rem 0.75rem 0;
+    padding: 0.5rem 0.75rem 0.45rem;
   }
 
   .explorer-page .site-footer {
@@ -183,15 +184,23 @@ body.explorer-page {
 
 .filter-open-btn {
   flex-shrink: 0;
-  padding: 0.45rem 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius);
   background: var(--bg-card);
   color: var(--text-primary);
-  font: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
   cursor: pointer;
+}
+
+.filter-open-btn svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: currentColor;
 }
 
 .filter-open-btn:hover {
@@ -588,8 +597,8 @@ body.filter-modal-open {
   position: relative;
   overflow-x: auto;
   overflow-y: hidden;
-  flex: 2 1 0;
-  min-height: 120px;
+  flex: 1 1 0;
+  min-height: 100px;
   border-bottom: 1px solid var(--border-subtle);
   background: #f3ebe0;
   cursor: crosshair;
@@ -615,20 +624,30 @@ body.filter-modal-open {
 
 #lanes-panel {
   overflow: auto;
-  flex: 3 1 0;
+  flex: 2 1 0;
   min-height: 0;
   background: var(--bg-main);
+  display: flex;
+  flex-direction: column;
 }
 
 #lanes {
   position: relative;
-  padding-bottom: 0.5rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .lane {
   display: flex;
+  flex: 1 1 0;
+  min-height: 0;
   border-bottom: 1px solid var(--border-subtle);
-  min-height: 40px;
+}
+
+.lane:last-child {
+  border-bottom: 0;
 }
 
 .lane-label {
@@ -647,6 +666,7 @@ body.filter-modal-open {
   color: var(--text-muted);
   background: var(--bg-main);
   box-shadow: 1px 0 0 var(--border-subtle);
+  align-self: stretch;
 }
 
 .lane-track {
