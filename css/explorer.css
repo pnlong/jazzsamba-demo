@@ -462,8 +462,17 @@ body.filter-modal-open {
 .song-list .song-list-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.song-list .song-list-main {
+  display: flex;
+  align-items: center;
   gap: 0.35rem;
   min-width: 0;
+  flex: 1 1 auto;
 }
 
 .song-list .song-id {
@@ -673,17 +682,38 @@ body.filter-modal-open {
   min-height: 0;
 }
 
-.timeline-scroll {
+.timeline-viewport {
   flex: 1 1 auto;
   min-height: 0;
   overflow-x: auto;
   overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.timeline-viewport::-webkit-scrollbar {
+  display: none;
+  height: 0;
 }
 
 .timeline-inner {
   display: flex;
   flex-direction: column;
   min-height: 100%;
+}
+
+.timeline-scroll {
+  flex: 0 0 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 14px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+}
+
+.timeline-scroll-spacer {
+  height: 1px;
+  pointer-events: none;
 }
 
 #waveform-wrap {
@@ -767,13 +797,12 @@ body.filter-modal-open {
   flex: 1 1 auto;
   min-height: 0;
   height: 100%;
-  display: flex;
-  align-items: center;
 }
 
 .lane-track-inner {
   position: relative;
-  flex-shrink: 0;
+  height: 100%;
+  min-height: 0;
 }
 
 .block {

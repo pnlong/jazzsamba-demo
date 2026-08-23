@@ -43,7 +43,9 @@
   const waveformWrap = () => document.getElementById("waveform-wrap");
   const lanesPanel = () => document.getElementById("lanes-panel");
   const timelineScroll = () => document.getElementById("timeline-scroll");
+  const timelineViewport = () => document.getElementById("timeline-viewport");
   const timelineInner = () => document.getElementById("timeline-inner");
+  const timelineScrollSpacer = () => document.getElementById("timeline-scroll-spacer");
   const statusEl = () => document.getElementById("explorer-notice");
   const playPauseBtn = () => document.getElementById("play-pause-btn");
   const followBtn = () => document.getElementById("follow-playhead-btn");
@@ -601,10 +603,28 @@
     );
   }
 
+  function setTimelineContentWidth(w) {
+    const inner = timelineInner();
+    const spacer = timelineScrollSpacer();
+    const lanes = lanesEl();
+    if (inner) inner.style.width = `${w}px`;
+    if (spacer) spacer.style.width = `${w}px`;
+    if (lanes) lanes.style.width = `${w}px`;
+  }
+
+  function timelineScrollWidth() {
+    const viewport = timelineViewport();
+    const scroll = timelineScroll();
+    return viewport?.clientWidth || scroll?.clientWidth || 0;
+  }
+
   function setBothScrollLeft(left) {
     syncingScroll = true;
+    const viewport = timelineViewport();
     const scroll = timelineScroll();
-    if (scroll) scroll.scrollLeft = left;
+    const clamped = Math.max(0, left);
+    if (viewport) viewport.scrollLeft = clamped;
+    if (scroll) scroll.scrollLeft = clamped;
     syncingScroll = false;
   }
 
@@ -633,12 +653,13 @@
   function scrollToTime(t, force = false) {
     if (!force && !followPlayhead) return;
     const scroll = timelineScroll();
-    if (!scroll) return;
+    const viewW = timelineScrollWidth();
+    if (!scroll || viewW <= 0) return;
     const x = tToX(t);
     const left = scroll.scrollLeft;
-    const right = left + scroll.clientWidth;
+    const right = left + viewW;
     if (force || x < left + SCROLL_MARGIN || x > right - SCROLL_MARGIN) {
-      setBothScrollLeft(Math.max(0, x - scroll.clientWidth * 0.25));
+      setBothScrollLeft(Math.max(0, x - viewW * 0.25));
     }
   }
 
@@ -763,7 +784,8 @@
   function wireTimelineResize() {
     const editor = document.getElementById("timeline-editor");
     const wrap = waveformWrap();
-    const scroll = timelineScroll();
+    const lanes = lanesPanel();
+    const viewport = timelineViewport();
     if (!editor || editor._resizeObs) return;
     const onResize = () => {
       if (duration <= 0) return;
@@ -773,7 +795,8 @@
     const ro = new ResizeObserver(onResize);
     ro.observe(editor);
     if (wrap) ro.observe(wrap);
-    if (scroll) ro.observe(scroll);
+    if (lanes) ro.observe(lanes);
+    if (viewport) ro.observe(viewport);
     editor._resizeObs = ro;
   }
 
@@ -781,10 +804,10 @@
 
   function lanesTargetTrackHeight() {
     const panel = lanesPanel();
-    const scroll = timelineScroll();
+    const viewport = timelineViewport();
     let h = panel?.clientHeight || 0;
-    if (h <= 0 && scroll && scroll.clientHeight > 0) {
-      h = Math.floor((scroll.clientHeight * 2) / 5);
+    if (h <= 0 && viewport && viewport.clientHeight > 0) {
+      h = Math.floor((viewport.clientHeight * 2) / 5);
     }
     if (h <= 0) {
       const editor = document.getElementById("timeline-editor");
@@ -800,29 +823,59 @@
     const baseBlockH = 28;
     const baseGap = 4;
     const baseTop = 4;
-    let blockHeight = baseBlockH;
-    let scaled = metrical.layoutSublanes(items, blockHeight, baseGap, baseTop);
-    let contentH = Math.max(36, scaled.trackHeight);
+    const maxBlockH = 72;
 
-    if (targetTrackHeight && targetTrackHeight > 0 && contentH > targetTrackHeight) {
-      let scale = targetTrackHeight / contentH;
-      blockHeight = Math.max(14, Math.round(baseBlockH * scale));
-      let gap = Math.max(1, Math.round(baseGap * scale));
-      scaled = metrical.layoutSublanes(items, blockHeight, gap, baseTop);
-      contentH = scaled.trackHeight;
-      if (contentH > targetTrackHeight && blockHeight > 14) {
-        scale = targetTrackHeight / contentH;
+    if (!items.length) {
+      const emptyH = targetTrackHeight && targetTrackHeight > 0 ? targetTrackHeight : 36;
+      return { layouts: [], blockHeight: baseBlockH, laneHeight: emptyH };
+    }
+
+    let blockHeight = baseBlockH;
+    let gap = baseGap;
+    let topPad = baseTop;
+    let scaled = metrical.layoutSublanes(items, blockHeight, gap, topPad);
+    let contentH = scaled.trackHeight;
+
+    const target =
+      targetTrackHeight && targetTrackHeight > 0 ? targetTrackHeight : null;
+
+    if (target) {
+      if (contentH > target) {
+        let scale = target / contentH;
         blockHeight = Math.max(14, Math.round(blockHeight * scale));
         gap = Math.max(1, Math.round(gap * scale));
-        scaled = metrical.layoutSublanes(items, blockHeight, gap, baseTop);
+        topPad = Math.max(2, Math.round(topPad * scale));
+        scaled = metrical.layoutSublanes(items, blockHeight, gap, topPad);
         contentH = scaled.trackHeight;
+        if (contentH > target && blockHeight > 14) {
+          scale = target / contentH;
+          blockHeight = Math.max(14, Math.round(blockHeight * scale));
+          gap = Math.max(1, Math.round(gap * scale));
+          topPad = Math.max(2, Math.round(topPad * scale));
+          scaled = metrical.layoutSublanes(items, blockHeight, gap, topPad);
+          contentH = scaled.trackHeight;
+        }
+      } else if (contentH < target) {
+        for (let pass = 0; pass < 4 && contentH < target - 1 && blockHeight < maxBlockH; pass += 1) {
+          const scale = target / contentH;
+          blockHeight = Math.min(maxBlockH, Math.max(blockHeight + 1, Math.round(blockHeight * scale)));
+          gap = Math.max(1, Math.round(gap * scale));
+          topPad = Math.max(2, Math.round(topPad * scale));
+          scaled = metrical.layoutSublanes(items, blockHeight, gap, topPad);
+          contentH = scaled.trackHeight;
+        }
       }
+      return {
+        layouts: scaled.layouts,
+        blockHeight,
+        laneHeight: target,
+      };
     }
 
     return {
       layouts: scaled.layouts,
-      contentHeight: contentH,
       blockHeight,
+      laneHeight: Math.max(36, contentH),
     };
   }
 
@@ -843,8 +896,8 @@
 
     const bars = annotations.bars || [];
     const items = metrical.assignSublanes(rows || [], bars);
-    const { layouts, contentHeight, blockHeight } = scaleLaneLayout(items, targetTrackHeight);
-    inner.style.height = `${contentHeight}px`;
+    const { layouts, laneHeight, blockHeight } = scaleLaneLayout(items, targetTrackHeight);
+    inner.style.height = `${laneHeight}px`;
 
     const colorIdx = new Map();
     const rowIndex = new Map();
@@ -879,10 +932,8 @@
 
   function renderLanes() {
     const w = contentWidth();
-    const inner = timelineInner();
-    if (inner) inner.style.width = `${w}px`;
+    setTimelineContentWidth(w);
     lanesEl().innerHTML = "";
-    lanesEl().style.width = `${w}px`;
     if (!annotations) return;
     const targetTrackHeight = lanesTargetTrackHeight();
     renderLane("Sections", annotations.sections || [], "section", null, "sections", targetTrackHeight);
@@ -1043,9 +1094,11 @@
           currentSong && currentSong.song_id === s.song_id ? "active" : ""
         }">
           <span class="song-list-row">
-            <span class="song-id">#${s.song_id}</span>
+            <span class="song-list-main">
+              <span class="song-id">#${s.song_id}</span>
+              <span class="title">${s.title}</span>
+            </span>
             <span class="chip chip-protocol ${protocolChipClass(s.synchronous)}" aria-label="${protocolLabel(s.synchronous)}">${protocolShortLabel(s.synchronous)}</span>
-            <span class="title">${s.title}</span>
           </span>
         </button>
       </li>`
@@ -1060,9 +1113,10 @@
   }
 
   function seekFromClientX(clientX) {
+    const viewport = timelineViewport();
     const scroll = timelineScroll();
-    if (!scroll) return;
-    const rect = scroll.getBoundingClientRect();
+    if (!viewport || !scroll) return;
+    const rect = viewport.getBoundingClientRect();
     const x = clientX - rect.left + scroll.scrollLeft;
     const t = Math.min(duration, xToT(x));
     audio().currentTime = t;
@@ -1148,11 +1202,24 @@
       if (ev.target.closest(".lane-label")) return;
       seekFromClientX(ev.clientX);
     });
-    timelineScroll()?.addEventListener("scroll", () => {
+    function syncTimelineScrollFrom(source) {
       if (syncingScroll) return;
+      const viewport = timelineViewport();
+      const scroll = timelineScroll();
+      if (!viewport || !scroll) return;
+      syncingScroll = true;
+      if (source === "viewport") {
+        scroll.scrollLeft = viewport.scrollLeft;
+      } else {
+        viewport.scrollLeft = scroll.scrollLeft;
+      }
+      syncingScroll = false;
       followPlayhead = false;
       updateFollowUI();
-    });
+    }
+
+    timelineViewport()?.addEventListener("scroll", () => syncTimelineScrollFrom("viewport"));
+    timelineScroll()?.addEventListener("scroll", () => syncTimelineScrollFrom("scroll"));
     audio().addEventListener("pause", () => {
       updatePlayPauseUI();
       metroTransport.notify("pause");

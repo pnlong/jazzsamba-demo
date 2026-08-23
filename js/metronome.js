@@ -10,7 +10,10 @@ function createMetronomeUI({
   statusEl = null,
 } = {}) {
   const LOOKAHEAD_MS = 40;
-  const SCHEDULE_AHEAD_SEC = 0.3;
+  const LOOKAHEAD_HIDDEN_MS = 250;
+  const SCHEDULE_AHEAD_VISIBLE_SEC = 0.4;
+  const SCHEDULE_AHEAD_HIDDEN_SEC = 30;
+  const MAX_SCHEDULE_PER_PASS = 512;
   const EPS = 0.001;
 
   let enabled = false;
@@ -23,6 +26,19 @@ function createMetronomeUI({
   let timerId = null;
   let hintedEmpty = false;
   let unsubscribe = null;
+  let onVisibilityChange = null;
+
+  function tabIsHidden() {
+    return typeof document !== 'undefined' && document.visibilityState === 'hidden';
+  }
+
+  function scheduleAheadSec() {
+    return tabIsHidden() ? SCHEDULE_AHEAD_HIDDEN_SEC : SCHEDULE_AHEAD_VISIBLE_SEC;
+  }
+
+  function timerIntervalMs() {
+    return tabIsHidden() ? LOOKAHEAD_HIDDEN_MS : LOOKAHEAD_MS;
+  }
 
   function makeClickBuffer(ctx, { freq, durationSec, peak }) {
     const sr = ctx.sampleRate;
@@ -89,11 +105,16 @@ function createMetronomeUI({
     }
   }
 
+  function startTimer() {
+    stopTimer();
+    timerId = setInterval(scheduleAhead, timerIntervalMs());
+  }
+
   function scheduleClick(beat) {
     const ctx = transport?.getAudioContext?.();
-    if (!ctx || !ensureBuffers(ctx)) return;
+    if (!ctx || !ensureBuffers(ctx)) return false;
     const when = transport.timelineToContextTime(beat.t);
-    if (when == null) return;
+    if (when == null) return false;
     const minWhen = ctx.currentTime + 0.002;
     const startWhen = when < minWhen ? minWhen : when;
     const source = ctx.createBufferSource();
@@ -105,25 +126,37 @@ function createMetronomeUI({
     try {
       source.start(startWhen);
     } catch (_) {
-      return;
+      return false;
     }
     scheduled.push({ source, when: startWhen });
     source.onended = () => {
       scheduled = scheduled.filter(s => s.source !== source);
     };
+    return true;
   }
 
   function scheduleAhead() {
     if (!enabled || !transport?.isPlaying?.()) return;
     const ctx = transport.getAudioContext?.();
     if (!ctx || !ensureBuffers(ctx)) return;
-    const horizon = ctx.currentTime + SCHEDULE_AHEAD_SEC;
-    while (nextIndex < beatTimes.length) {
+
+    const aheadSec = scheduleAheadSec();
+    const hidden = tabIsHidden();
+    const nowT = transport.getCurrentTime?.() ?? 0;
+    const timelineHorizon = nowT + aheadSec;
+    const contextHorizon = ctx.currentTime + aheadSec;
+    let scheduledCount = 0;
+
+    while (nextIndex < beatTimes.length && scheduledCount < MAX_SCHEDULE_PER_PASS) {
       const beat = beatTimes[nextIndex];
+      if (hidden && beat.t > timelineHorizon) break;
+
       const when = transport.timelineToContextTime(beat.t);
       if (when == null) break;
-      if (when > horizon) break;
-      scheduleClick(beat);
+      if (!hidden && when > contextHorizon) break;
+      if (hidden && when > contextHorizon + 0.5) break;
+
+      if (scheduleClick(beat)) scheduledCount += 1;
       nextIndex += 1;
     }
   }
@@ -147,7 +180,18 @@ function createMetronomeUI({
     nextIndex = beatTimes.findIndex(b => b.t >= nowT - EPS);
     if (nextIndex < 0) nextIndex = beatTimes.length;
     scheduleAhead();
-    timerId = setInterval(scheduleAhead, LOOKAHEAD_MS);
+    startTimer();
+  }
+
+  function handleVisibilityChange() {
+    if (!enabled || !transport?.isPlaying?.()) return;
+    // Background tabs throttle timers (~1s). Burst-schedule far ahead on Web Audio.
+    scheduleAhead();
+    if (tabIsHidden()) {
+      scheduleAhead();
+    } else {
+      startTimer();
+    }
   }
 
   function updateButton() {
@@ -199,6 +243,10 @@ function createMetronomeUI({
     });
   }
   wireTransport();
+  if (typeof document !== 'undefined') {
+    onVisibilityChange = handleVisibilityChange;
+    document.addEventListener('visibilitychange', onVisibilityChange);
+  }
   updateButton();
 
   return {
@@ -209,6 +257,10 @@ function createMetronomeUI({
       setEnabled(false);
       if (unsubscribe) unsubscribe();
       unsubscribe = null;
+      if (onVisibilityChange) {
+        document.removeEventListener('visibilitychange', onVisibilityChange);
+        onVisibilityChange = null;
+      }
     },
   };
 }
