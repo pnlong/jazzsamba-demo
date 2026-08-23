@@ -40,6 +40,17 @@ body.explorer-page {
   margin-bottom: 0.5rem;
 }
 
+@media (orientation: portrait) and (min-width: 861px) and (max-height: 1100px) {
+  #waveform-wrap {
+    flex: 1 1 0;
+    min-height: 80px;
+  }
+
+  #lanes-panel {
+    flex: 1 1 0;
+  }
+}
+
 @media (max-width: 860px) {
   body.explorer-page {
     height: 100dvh;
@@ -97,7 +108,12 @@ body.explorer-page {
   }
 
   #waveform-wrap {
-    min-height: 96px;
+    flex: 1 1 0;
+    min-height: 72px;
+  }
+
+  #lanes-panel {
+    flex: 1 1 0;
   }
 }
 
