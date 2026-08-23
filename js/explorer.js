@@ -42,7 +42,7 @@
   const lanesEl = () => document.getElementById("lanes");
   const waveformWrap = () => document.getElementById("waveform-wrap");
   const lanesPanel = () => document.getElementById("lanes-panel");
-  const statusEl = () => document.getElementById("explorer-status");
+  const statusEl = () => document.getElementById("explorer-notice");
   const playPauseBtn = () => document.getElementById("play-pause-btn");
   const followBtn = () => document.getElementById("follow-playhead-btn");
   const metronomeBtn = () => document.getElementById("metronome-btn");
@@ -120,7 +120,12 @@
   }
 
   function setStatus(msg) {
-    if (statusEl()) statusEl().textContent = msg || "";
+    const el = statusEl();
+    if (!el) return;
+    const text = msg || "";
+    el.textContent = text;
+    el.hidden = !text;
+    el.style.color = "";
   }
 
   function titleCaseInstrument(inst) {
@@ -330,6 +335,280 @@
     document.body.classList.remove("filter-modal-open");
   }
 
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function detailTruthy(val) {
+    if (val === null || val === undefined || val === "" || val === "NA") return false;
+    if (val === "False" || val === false) return false;
+    return true;
+  }
+
+  function detailRow(label, value) {
+    if (!detailTruthy(value)) return "";
+    return `<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd>`;
+  }
+
+  function sectionMusiciansFor(sectionIndex) {
+    return (annotations?.section_musicians || [])
+      .filter((m) => String(m.section_index) === String(sectionIndex))
+      .map((m) => {
+        const id = parseInt(m.musician_id, 10);
+        const name = musiciansById[id]?.name || `id ${id}`;
+        return `${name} (${id}) · ${titleCaseInstrument(m.instrument)}`;
+      });
+  }
+
+  const CHORD_TRIAD_LABELS = {
+    maj: "major",
+    min: "minor",
+    dim: "diminished",
+    aug: "augmented",
+    sus: "suspended",
+    power: "power",
+  };
+
+  const CHORD_SEVENTH_LABELS = {
+    dom: "dominant 7th",
+    maj: "major 7th",
+    min: "minor 7th",
+    half_dim: "half-diminished 7th",
+    dim: "diminished 7th",
+  };
+
+  const CHORD_EXTENSION_TAGS = {
+    has_6: "6",
+    has_9: "9",
+    has_11: "11",
+    has_13: "13",
+    has_add9: "add9",
+    is_sus2: "sus2",
+    is_sus4: "sus4",
+  };
+
+  const CHORD_ALTERATION_TAGS = {
+    alt_b5: "♭5",
+    alt_sharp5: "♯5",
+    alt_b9: "♭9",
+    alt_sharp9: "♯9",
+    alt_sharp11: "♯11",
+    alt_b11: "♭11",
+  };
+
+  function annFlagTrue(row, key) {
+    return row[key] === "True" || row[key] === true;
+  }
+
+  function chordFlagTrue(row, key) {
+    return annFlagTrue(row, key);
+  }
+
+  function buildAnnotationPositionLine(row) {
+    const parts = [`bars ${row.start_bar}–${row.end_bar}`];
+    if (detailTruthy(row.start_time) && detailTruthy(row.end_time)) {
+      parts.push(
+        `${fmt(parseFloat(row.start_time))}–${fmt(parseFloat(row.end_time))}`
+      );
+    }
+    return parts.join(" · ");
+  }
+
+  function buildSectionHierarchyLine(row) {
+    const parts = [];
+    const top = titleCaseWords(row.top_level_section || "");
+    if (top) parts.push(top);
+    if (detailTruthy(row.bottom_level_section) && row.bottom_level_section !== "NA") {
+      parts.push(row.bottom_level_section);
+    }
+    return parts.join(" · ");
+  }
+
+  function buildSectionFlagTags(row) {
+    const flags = [];
+    if (annFlagTrue(row, "is_intro")) flags.push("Intro");
+    if (annFlagTrue(row, "is_outro")) flags.push("Outro");
+    if (annFlagTrue(row, "is_solo")) flags.push("Solo");
+    if (annFlagTrue(row, "is_head_in")) flags.push("Head in");
+    else if (annFlagTrue(row, "is_head_out")) flags.push("Head out");
+    else if (annFlagTrue(row, "is_head")) flags.push("Head");
+    if (!flags.length) return "";
+    return flags
+      .map((flag) => `<span class="ann-tag">${escapeHtml(flag)}</span>`)
+      .join("");
+  }
+
+  function buildSectionMusiciansTagsHtml(sectionIndex) {
+    const lines = sectionMusiciansFor(sectionIndex);
+    if (!lines.length) return "";
+    return lines
+      .map((line) => `<span class="ann-tag">${escapeHtml(line)}</span>`)
+      .join("");
+  }
+
+  function humanizeTriad(triad) {
+    if (!detailTruthy(triad) || triad === "NA") return "";
+    return CHORD_TRIAD_LABELS[triad] || String(triad);
+  }
+
+  function humanizeSeventh(seventh) {
+    if (!detailTruthy(seventh) || seventh === "none" || seventh === "NA") return "";
+    return CHORD_SEVENTH_LABELS[seventh] || String(seventh);
+  }
+
+  function chordTagsHtml(row, tagMap) {
+    const tags = [];
+    for (const [key, label] of Object.entries(tagMap)) {
+      if (chordFlagTrue(row, key)) tags.push(label);
+    }
+    if (!tags.length) return "";
+    return tags
+      .map((tag) => `<span class="ann-tag">${escapeHtml(tag)}</span>`)
+      .join("");
+  }
+
+  function detailTagRow(label, tagsHtml) {
+    if (!tagsHtml) return "";
+    return `<dt>${escapeHtml(label)}</dt><dd class="ann-tag-list">${tagsHtml}</dd>`;
+  }
+
+  function buildChordStructureLine(row) {
+    const parts = [];
+    if (detailTruthy(row.root) && row.root !== "NA") parts.push(row.root);
+    const triad = humanizeTriad(row.triad);
+    if (triad) parts.push(triad);
+    const seventh = humanizeSeventh(row.seventh);
+    if (seventh) parts.push(seventh);
+    return parts.join(" · ");
+  }
+
+  function buildChordIntervalsLine(row) {
+    const parts = [];
+    if (detailTruthy(row.root_interval) && row.root_interval !== "NA") {
+      parts.push(`root +${row.root_interval}`);
+    }
+    if (detailTruthy(row.bass_interval) && row.bass_interval !== "NA") {
+      parts.push(`bass +${row.bass_interval}`);
+    }
+    if (
+      detailTruthy(row.bass_interval_from_root) &&
+      row.bass_interval_from_root !== "NA"
+    ) {
+      parts.push(`bass +${row.bass_interval_from_root} from root`);
+    }
+    return parts.join(" · ");
+  }
+
+  function buildChordPositionLine(row) {
+    return buildAnnotationPositionLine(row);
+  }
+
+  function buildSectionDetailHtml(row) {
+    const parts = [];
+
+    const hierarchy = buildSectionHierarchyLine(row);
+    if (hierarchy) parts.push(detailRow("Form", hierarchy));
+
+    parts.push(detailTagRow("Flags", buildSectionFlagTags(row)));
+
+    if (annFlagTrue(row, "is_solo") && detailTruthy(row.soloist) && row.soloist !== "NA") {
+      parts.push(detailRow("Soloist", titleCaseInstrument(row.soloist)));
+    }
+
+    parts.push(
+      detailTagRow("Playing", buildSectionMusiciansTagsHtml(row.section_index))
+    );
+
+    parts.push(detailRow("Position", buildAnnotationPositionLine(row)));
+
+    return `<dl class="ann-detail ann-detail-section">${parts.filter(Boolean).join("")}</dl>`;
+  }
+
+  function buildChordDetailHtml(row) {
+    const parts = [];
+
+    if (chordFlagTrue(row, "is_no_chord")) {
+      parts.push(detailRow("Type", "No chord"));
+    }
+
+    const structure = buildChordStructureLine(row);
+    if (structure) parts.push(detailRow("Structure", structure));
+
+    const bassNote =
+      detailTruthy(row.bass) && row.bass !== "NA" ? row.bass : "";
+    const rootNote =
+      detailTruthy(row.root) && row.root !== "NA" ? row.root : "";
+    if (
+      bassNote &&
+      (chordFlagTrue(row, "is_slash") || bassNote !== rootNote)
+    ) {
+      parts.push(detailRow("Slash bass", bassNote));
+    }
+
+    const intervals = buildChordIntervalsLine(row);
+    if (intervals) parts.push(detailRow("From key", intervals));
+
+    parts.push(
+      detailTagRow("Extensions", chordTagsHtml(row, CHORD_EXTENSION_TAGS))
+    );
+    parts.push(
+      detailTagRow("Alterations", chordTagsHtml(row, CHORD_ALTERATION_TAGS))
+    );
+
+    parts.push(detailRow("Position", buildChordPositionLine(row)));
+
+    return `<dl class="ann-detail ann-detail-chord">${parts.filter(Boolean).join("")}</dl>`;
+  }
+
+  function openAnnotationModal(type, index) {
+    const modal = document.getElementById("annotation-modal");
+    const titleEl = document.getElementById("annotation-modal-title");
+    const bodyEl = document.getElementById("annotation-modal-body");
+    if (!modal || !titleEl || !bodyEl || !annotations) return;
+
+    let html = "";
+    let title = "Details";
+    if (type === "sections") {
+      const row = (annotations.sections || [])[index];
+      if (!row) return;
+      title = row.section || "Section";
+      html = buildSectionDetailHtml(row);
+    } else if (type === "chords") {
+      const row = (annotations.chords || [])[index];
+      if (!row) return;
+      title = row.chord || "Chord";
+      html = buildChordDetailHtml(row);
+    } else {
+      return;
+    }
+
+    titleEl.textContent = title;
+    bodyEl.innerHTML = html;
+    modal.hidden = false;
+    document.body.classList.add("filter-modal-open");
+    document.getElementById("annotation-modal-close")?.focus();
+  }
+
+  function closeAnnotationModal() {
+    const modal = document.getElementById("annotation-modal");
+    if (!modal || modal.hidden) return;
+    modal.hidden = true;
+    document.body.classList.remove("filter-modal-open");
+  }
+
+  function anyModalOpen() {
+    const filterModal = document.getElementById("filter-modal");
+    const annModal = document.getElementById("annotation-modal");
+    return (
+      (filterModal && !filterModal.hidden) ||
+      (annModal && !annModal.hidden)
+    );
+  }
+
   function setBothScrollLeft(left) {
     syncingScroll = true;
     waveformWrap().scrollLeft = left;
@@ -370,36 +649,45 @@
     }
   }
 
+  function waveformHeight() {
+    const wrap = waveformWrap();
+    const h = wrap?.clientHeight || 0;
+    return Math.max(120, h);
+  }
+
   function drawWaveform() {
     const c = canvas();
     if (!c) return;
     const w = contentWidth();
+    const h = waveformHeight();
     c.width = w;
-    c.height = 96;
+    c.height = h;
     c.style.width = `${w}px`;
+    c.style.height = `${h}px`;
     const ctx = c.getContext("2d");
-    ctx.clearRect(0, 0, w, 96);
+    ctx.clearRect(0, 0, w, h);
 
     // Label gutter (matches lane labels)
     ctx.fillStyle = "#faf8f5";
-    ctx.fillRect(0, 0, LABEL_W, 96);
+    ctx.fillRect(0, 0, LABEL_W, h);
     ctx.strokeStyle = "rgba(28,19,21,0.12)";
     ctx.beginPath();
     ctx.moveTo(LABEL_W + 0.5, 0);
-    ctx.lineTo(LABEL_W + 0.5, 96);
+    ctx.lineTo(LABEL_W + 0.5, h);
     ctx.stroke();
 
     if (!peaks?.peaks?.length) return;
     ctx.fillStyle = "#c81d1a";
-    const mid = 48;
+    const mid = h / 2;
+    const amp = mid - 8;
     const arr = peaks.peaks;
     const tw = trackWidth();
     for (let i = 0; i < arr.length; i++) {
       const [mn, mx] = arr[i];
       const x0 = LABEL_W + (i / arr.length) * tw;
       const x1 = LABEL_W + ((i + 1) / arr.length) * tw;
-      const top = mid - mx * 42;
-      const bot = mid - mn * 42;
+      const top = mid - mx * amp;
+      const bot = mid - mn * amp;
       ctx.fillRect(x0, top, Math.max(1, x1 - x0), Math.max(1, bot - top));
     }
     const bars = annotations?.bars || [];
@@ -409,9 +697,19 @@
       const x = tToX(parseFloat(b.start_time));
       ctx.beginPath();
       ctx.moveTo(x, 0);
-      ctx.lineTo(x, 96);
+      ctx.lineTo(x, h);
       ctx.stroke();
     });
+  }
+
+  function wireTimelineResize() {
+    const editor = document.getElementById("timeline-editor");
+    if (!editor || editor._resizeObs) return;
+    const ro = new ResizeObserver(() => {
+      if (duration > 0) drawWaveform();
+    });
+    ro.observe(editor);
+    editor._resizeObs = ro;
   }
 
   function renderLane(name, rows, labelKey, labelFn, laneKey) {
@@ -433,11 +731,20 @@
     track.style.height = `${Math.max(36, trackHeight)}px`;
 
     const colorIdx = new Map();
+    const rowIndex = new Map();
+    (rows || []).forEach((r, i) => rowIndex.set(r, i));
+    const clickable = laneKey === "sections" || laneKey === "chords";
+
     layouts.forEach(({ row, top, sublane }) => {
       const st = metrical.metricalStartTime(bars, row);
       const et = metrical.metricalEndTime(bars, row);
       const block = document.createElement("div");
       block.className = "block";
+      if (clickable) {
+        block.classList.add("block-clickable");
+        block.dataset.annType = laneKey;
+        block.dataset.annIndex = String(rowIndex.get(row) ?? 0);
+      }
       const ci = colorIdx.get(sublane) || 0;
       colorIdx.set(sublane, ci + 1);
       const colors = metrical.blockStyle(laneKey, ci);
@@ -449,7 +756,6 @@
       block.style.border = colors.border;
       block.style.color = colors.color;
       block.textContent = labelFn ? labelFn(row) : row[labelKey] ?? "";
-      block.title = block.textContent;
       track.appendChild(block);
     });
     lanesEl().appendChild(lane);
@@ -639,7 +945,7 @@
       getBars: () => annotations?.bars || [],
       getBeatsPerBar: () => beatsPerBarFromSong(currentSong),
       buttonEl: metronomeBtn(),
-      statusEl: statusEl(),
+      statusEl: null,
     });
     metronomeBtn().addEventListener(
       "click",
@@ -698,6 +1004,12 @@
       seekFromClientX(ev.clientX, waveformWrap());
     });
     lanesPanel().addEventListener("click", (ev) => {
+      const block = ev.target.closest(".block-clickable");
+      if (block) {
+        ev.stopPropagation();
+        openAnnotationModal(block.dataset.annType, parseInt(block.dataset.annIndex, 10));
+        return;
+      }
       if (ev.target.closest(".lane-label")) return;
       seekFromClientX(ev.clientX, lanesPanel());
     });
@@ -748,6 +1060,9 @@
     document.getElementById("filter-modal-close").addEventListener("click", closeFilterModal);
     document.getElementById("filter-modal-done").addEventListener("click", closeFilterModal);
     document.getElementById("filter-modal-backdrop").addEventListener("click", closeFilterModal);
+    document.getElementById("annotation-modal-close").addEventListener("click", closeAnnotationModal);
+    document.getElementById("annotation-modal-done").addEventListener("click", closeAnnotationModal);
+    document.getElementById("annotation-modal-backdrop").addEventListener("click", closeAnnotationModal);
     document.getElementById("filter-reset").addEventListener("click", () => {
       resetAllFilters();
       onFiltersChanged();
@@ -761,13 +1076,15 @@
       onFiltersChanged();
     });
     window.addEventListener("keydown", (ev) => {
-      const modal = document.getElementById("filter-modal");
-      if (ev.key === "Escape" && modal && !modal.hidden) {
-        ev.preventDefault();
-        closeFilterModal();
-      }
+      if (ev.key !== "Escape" || !anyModalOpen()) return;
+      ev.preventDefault();
+      const annModal = document.getElementById("annotation-modal");
+      if (annModal && !annModal.hidden) closeAnnotationModal();
+      else closeFilterModal();
     });
     updateFollowUI();
+
+    wireTimelineResize();
 
     try {
       catalog = await loadCatalog();

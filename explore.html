@@ -52,8 +52,11 @@
 
       <section class="explorer-main">
         <div class="explorer-toolbar">
-          <h2 id="song-title">Loading…</h2>
-          <div id="song-meta" class="muted"></div>
+          <div class="explorer-toolbar-head">
+            <h2 id="song-title">Loading…</h2>
+            <div id="song-meta" class="muted"></div>
+          </div>
+          <p class="explorer-notice" id="explorer-notice" hidden></p>
           <div class="transport" id="transport">
             <button type="button" id="play-pause-btn" class="transport-btn" title="Play" aria-label="Play">
               <svg class="transport-icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
@@ -79,14 +82,13 @@
 
         <div id="timeline-editor">
           <div id="waveform-wrap">
-            <canvas id="waveform" height="96"></canvas>
+            <canvas id="waveform"></canvas>
             <div id="playhead" class="playhead"></div>
           </div>
           <div id="lanes-panel">
             <div id="lanes"></div>
           </div>
         </div>
-        <p class="explorer-status" id="explorer-status"></p>
       </section>
     </div>
     <audio id="audio" preload="metadata"></audio>
@@ -162,6 +164,22 @@
       <div class="filter-modal-footer">
         <button type="button" class="filter-reset" id="filter-reset">Reset filters</button>
         <button type="button" class="btn btn-primary filter-done-btn" id="filter-modal-done">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="annotation-modal" class="filter-modal annotation-modal" hidden role="dialog" aria-modal="true" aria-labelledby="annotation-modal-title">
+    <button type="button" class="filter-modal-backdrop" id="annotation-modal-backdrop" aria-label="Close details"></button>
+    <div class="filter-modal-panel">
+      <div class="filter-modal-header">
+        <h2 id="annotation-modal-title">Details</h2>
+        <button type="button" class="filter-modal-close" id="annotation-modal-close" aria-label="Close">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="filter-modal-body" id="annotation-modal-body"></div>
+      <div class="filter-modal-footer">
+        <button type="button" class="btn btn-primary filter-done-btn" id="annotation-modal-done">Close</button>
       </div>
     </div>
   </div>
