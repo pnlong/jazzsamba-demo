@@ -654,10 +654,22 @@ body.filter-modal-open {
   min-height: 0;
 }
 
-#waveform-wrap {
-  position: relative;
+.timeline-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+.timeline-inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+#waveform-wrap {
+  position: relative;
+  overflow: hidden;
   flex: 3 1 0;
   min-height: 120px;
   border-bottom: 1px solid var(--border-subtle);
@@ -665,13 +677,6 @@ body.filter-modal-open {
   cursor: crosshair;
   display: flex;
   align-items: stretch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-#waveform-wrap::-webkit-scrollbar {
-  display: none;
-  height: 0;
 }
 
 #waveform {
@@ -691,7 +696,7 @@ body.filter-modal-open {
 }
 
 #lanes-panel {
-  overflow: auto;
+  overflow: hidden;
   flex: 2 1 0;
   min-height: 0;
   background: var(--bg-main);
@@ -702,14 +707,14 @@ body.filter-modal-open {
 #lanes {
   position: relative;
   flex: 1 1 auto;
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
 }
 
 .lane {
   display: flex;
-  flex: 1 1 0;
   align-items: stretch;
   min-height: 0;
   border-bottom: 1px solid var(--border-subtle);
@@ -741,8 +746,15 @@ body.filter-modal-open {
 .lane-track {
   position: relative;
   flex: 1 1 auto;
-  min-height: 36px;
+  min-height: 0;
   height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.lane-track-inner {
+  position: relative;
+  flex-shrink: 0;
 }
 
 .block {

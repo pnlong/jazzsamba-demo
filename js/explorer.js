@@ -42,6 +42,8 @@
   const lanesEl = () => document.getElementById("lanes");
   const waveformWrap = () => document.getElementById("waveform-wrap");
   const lanesPanel = () => document.getElementById("lanes-panel");
+  const timelineScroll = () => document.getElementById("timeline-scroll");
+  const timelineInner = () => document.getElementById("timeline-inner");
   const statusEl = () => document.getElementById("explorer-notice");
   const playPauseBtn = () => document.getElementById("play-pause-btn");
   const followBtn = () => document.getElementById("follow-playhead-btn");
@@ -611,8 +613,8 @@
 
   function setBothScrollLeft(left) {
     syncingScroll = true;
-    waveformWrap().scrollLeft = left;
-    lanesPanel().scrollLeft = left;
+    const scroll = timelineScroll();
+    if (scroll) scroll.scrollLeft = left;
     syncingScroll = false;
   }
 
@@ -640,12 +642,13 @@
 
   function scrollToTime(t, force = false) {
     if (!force && !followPlayhead) return;
-    const wrap = waveformWrap();
+    const scroll = timelineScroll();
+    if (!scroll) return;
     const x = tToX(t);
-    const left = wrap.scrollLeft;
-    const right = left + wrap.clientWidth;
+    const left = scroll.scrollLeft;
+    const right = left + scroll.clientWidth;
     if (force || x < left + SCROLL_MARGIN || x > right - SCROLL_MARGIN) {
-      setBothScrollLeft(Math.max(0, x - wrap.clientWidth * 0.25));
+      setBothScrollLeft(Math.max(0, x - scroll.clientWidth * 0.25));
     }
   }
 
@@ -770,7 +773,7 @@
   function wireTimelineResize() {
     const editor = document.getElementById("timeline-editor");
     const wrap = waveformWrap();
-    const lanes = lanesPanel();
+    const scroll = timelineScroll();
     if (!editor || editor._resizeObs) return;
     const onResize = () => {
       if (duration <= 0) return;
@@ -780,7 +783,7 @@
     const ro = new ResizeObserver(onResize);
     ro.observe(editor);
     if (wrap) ro.observe(wrap);
-    if (lanes) ro.observe(lanes);
+    if (scroll) ro.observe(scroll);
     editor._resizeObs = ro;
   }
 
@@ -788,59 +791,47 @@
 
   function lanesTargetTrackHeight() {
     const panel = lanesPanel();
-    if (!panel || panel.clientHeight <= 0) return null;
-    return Math.floor((panel.clientHeight - 2) / LANE_COUNT);
-  }
-
-  function centerLayoutsInTrack(layouts, blockHeight, trackHeight) {
-    if (!layouts.length || !trackHeight) return;
-    const minTop = Math.min(...layouts.map((l) => l.top));
-    const maxBottom = Math.max(...layouts.map((l) => l.top + blockHeight));
-    const contentH = maxBottom - minTop;
-    const offset = Math.floor((trackHeight - contentH) / 2) - minTop;
-    if (offset !== 0) {
-      layouts.forEach((l) => {
-        l.top += offset;
-      });
+    const scroll = timelineScroll();
+    let h = panel?.clientHeight || 0;
+    if (h <= 0 && scroll && scroll.clientHeight > 0) {
+      h = Math.floor((scroll.clientHeight * 2) / 5);
     }
+    if (h <= 0) {
+      const editor = document.getElementById("timeline-editor");
+      if (editor && editor.clientHeight > 0) {
+        h = Math.floor((editor.clientHeight * 2) / 5);
+      }
+    }
+    if (h <= 0) return null;
+    return Math.floor((h - 2) / LANE_COUNT);
   }
 
   function scaleLaneLayout(items, targetTrackHeight) {
     const baseBlockH = 28;
     const baseGap = 4;
     const baseTop = 4;
-    const natural = metrical.layoutSublanes(items, baseBlockH, baseGap, baseTop);
-    const naturalH = Math.max(36, natural.trackHeight);
+    let blockHeight = baseBlockH;
+    let scaled = metrical.layoutSublanes(items, blockHeight, baseGap, baseTop);
+    let contentH = Math.max(36, scaled.trackHeight);
 
-    if (!targetTrackHeight || targetTrackHeight <= 0) {
-      centerLayoutsInTrack(natural.layouts, baseBlockH, naturalH);
-      return {
-        layouts: natural.layouts,
-        trackHeight: naturalH,
-        blockHeight: baseBlockH,
-      };
+    if (targetTrackHeight && targetTrackHeight > 0 && contentH > targetTrackHeight) {
+      let scale = targetTrackHeight / contentH;
+      blockHeight = Math.max(14, Math.round(baseBlockH * scale));
+      let gap = Math.max(1, Math.round(baseGap * scale));
+      scaled = metrical.layoutSublanes(items, blockHeight, gap, baseTop);
+      contentH = scaled.trackHeight;
+      if (contentH > targetTrackHeight && blockHeight > 14) {
+        scale = targetTrackHeight / contentH;
+        blockHeight = Math.max(14, Math.round(blockHeight * scale));
+        gap = Math.max(1, Math.round(gap * scale));
+        scaled = metrical.layoutSublanes(items, blockHeight, gap, baseTop);
+        contentH = scaled.trackHeight;
+      }
     }
-
-    const target = targetTrackHeight;
-    let scale = target / naturalH;
-    let blockHeight = Math.max(16, Math.min(64, Math.round(baseBlockH * scale)));
-    let gap = Math.max(1, Math.round(baseGap * scale));
-    let defaultTop = Math.max(2, Math.round(baseTop * scale));
-    let scaled = metrical.layoutSublanes(items, blockHeight, gap, defaultTop);
-
-    if (scaled.trackHeight > target && blockHeight > 16) {
-      scale = target / scaled.trackHeight;
-      blockHeight = Math.max(16, Math.round(blockHeight * scale));
-      gap = Math.max(1, Math.round(gap * scale));
-      defaultTop = Math.max(2, Math.round(defaultTop * scale));
-      scaled = metrical.layoutSublanes(items, blockHeight, gap, defaultTop);
-    }
-
-    centerLayoutsInTrack(scaled.layouts, blockHeight, target);
 
     return {
       layouts: scaled.layouts,
-      trackHeight: target,
+      contentHeight: contentH,
       blockHeight,
     };
   }
@@ -853,14 +844,17 @@
     label.textContent = name;
     const track = document.createElement("div");
     track.className = "lane-track";
-    track.style.width = `${trackWidth()}px`;
+    const inner = document.createElement("div");
+    inner.className = "lane-track-inner";
+    inner.style.width = `${trackWidth()}px`;
+    track.appendChild(inner);
     lane.appendChild(label);
     lane.appendChild(track);
 
     const bars = annotations.bars || [];
     const items = metrical.assignSublanes(rows || [], bars);
-    const { layouts, trackHeight, blockHeight } = scaleLaneLayout(items, targetTrackHeight);
-    track.style.height = `${trackHeight}px`;
+    const { layouts, contentHeight, blockHeight } = scaleLaneLayout(items, targetTrackHeight);
+    inner.style.height = `${contentHeight}px`;
 
     const colorIdx = new Map();
     const rowIndex = new Map();
@@ -888,14 +882,17 @@
       block.style.border = colors.border;
       block.style.color = colors.color;
       block.textContent = labelFn ? labelFn(row) : row[labelKey] ?? "";
-      track.appendChild(block);
+      inner.appendChild(block);
     });
     lanesEl().appendChild(lane);
   }
 
   function renderLanes() {
+    const w = contentWidth();
+    const inner = timelineInner();
+    if (inner) inner.style.width = `${w}px`;
     lanesEl().innerHTML = "";
-    lanesEl().style.width = `${contentWidth()}px`;
+    lanesEl().style.width = `${w}px`;
     if (!annotations) return;
     const targetTrackHeight = lanesTargetTrackHeight();
     renderLane("Sections", annotations.sections || [], "section", null, "sections", targetTrackHeight);
@@ -908,6 +905,14 @@
       "soloists",
       targetTrackHeight
     );
+    requestAnimationFrame(() => {
+      if (!annotations || duration <= 0) return;
+      const retryTarget = lanesTargetTrackHeight();
+      if (!retryTarget) return;
+      if (!targetTrackHeight || Math.abs(retryTarget - targetTrackHeight) > 2) {
+        renderLanes();
+      }
+    });
   }
 
   function syncPlayhead() {
@@ -1061,9 +1066,11 @@
     });
   }
 
-  function seekFromClientX(clientX, scrollEl) {
-    const rect = scrollEl.getBoundingClientRect();
-    const x = clientX - rect.left + scrollEl.scrollLeft;
+  function seekFromClientX(clientX) {
+    const scroll = timelineScroll();
+    if (!scroll) return;
+    const rect = scroll.getBoundingClientRect();
+    const x = clientX - rect.left + scroll.scrollLeft;
     const t = Math.min(duration, xToT(x));
     audio().currentTime = t;
     followPlayhead = true;
@@ -1136,7 +1143,7 @@
       metroTransport.notify("seek", { t: a.currentTime });
     });
     waveformWrap().addEventListener("click", (ev) => {
-      seekFromClientX(ev.clientX, waveformWrap());
+      seekFromClientX(ev.clientX);
     });
     lanesPanel().addEventListener("click", (ev) => {
       const block = ev.target.closest(".block-clickable");
@@ -1146,15 +1153,12 @@
         return;
       }
       if (ev.target.closest(".lane-label")) return;
-      seekFromClientX(ev.clientX, lanesPanel());
+      seekFromClientX(ev.clientX);
     });
-    lanesPanel().addEventListener("scroll", () => {
+    timelineScroll()?.addEventListener("scroll", () => {
       if (syncingScroll) return;
       followPlayhead = false;
       updateFollowUI();
-      syncingScroll = true;
-      waveformWrap().scrollLeft = lanesPanel().scrollLeft;
-      syncingScroll = false;
     });
     audio().addEventListener("pause", () => {
       updatePlayPauseUI();
