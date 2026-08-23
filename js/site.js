@@ -126,6 +126,36 @@
     });
   }
 
+  function renderSiteFooter() {
+    const footer = document.querySelector(".site-footer");
+    if (!footer) return;
+
+    const homeLink = `<a href="index.html">JazzSAMBA</a>`;
+    const codeLink = `<a data-link="code" href="#">Code</a>`;
+    const packageLink = `<a data-link="package" href="#">Package</a>`;
+    const page = pageName();
+
+    let line = "";
+    switch (page) {
+      case "home":
+        line = `${homeLink} · ${codeLink} · ${packageLink}`;
+        break;
+      case "explore":
+        line = `${homeLink} · Explore`;
+        break;
+      case "about":
+        line = `${homeLink} · About`;
+        break;
+      case "band":
+        line = `${homeLink} · The Band`;
+        break;
+      default:
+        line = homeLink;
+    }
+
+    footer.innerHTML = line;
+  }
+
   function renderAuthors(el) {
     if (!el) return;
     const parts = AUTHORS.map((a) => {
@@ -234,6 +264,7 @@
     LINKS,
     pageName,
     markCurrentNav,
+    renderSiteFooter,
     renderAuthors,
     renderAffils,
     renderBand,
@@ -272,6 +303,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     markCurrentNav();
+    renderSiteFooter();
     wireCodeLinks();
     wireMobileNav();
   });

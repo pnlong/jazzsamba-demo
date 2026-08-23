@@ -241,6 +241,17 @@ p {
   font-size: 0.9rem;
 }
 
+.site-footer-line {
+  margin: 0;
+}
+
+.site-footer-note {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

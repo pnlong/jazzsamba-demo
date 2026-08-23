@@ -187,6 +187,14 @@ body.explorer-page {
   font: inherit;
 }
 
+.sidebar-mix-note {
+  margin: 0;
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
 .filter-open-btn {
   flex-shrink: 0;
   display: inline-flex;
