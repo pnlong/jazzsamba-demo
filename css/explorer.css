@@ -703,7 +703,7 @@ body.filter-modal-open {
 .lane {
   display: flex;
   flex: 1 1 0;
-  align-items: center;
+  align-items: stretch;
   min-height: 0;
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -733,8 +733,9 @@ body.filter-modal-open {
 
 .lane-track {
   position: relative;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   min-height: 36px;
+  height: 100%;
 }
 
 .block {

@@ -770,16 +770,73 @@
   function wireTimelineResize() {
     const editor = document.getElementById("timeline-editor");
     const wrap = waveformWrap();
+    const lanes = lanesPanel();
     if (!editor || editor._resizeObs) return;
-    const ro = new ResizeObserver(() => {
-      if (duration > 0) drawWaveform();
-    });
+    const onResize = () => {
+      if (duration <= 0) return;
+      drawWaveform();
+      if (annotations) renderLanes();
+    };
+    const ro = new ResizeObserver(onResize);
     ro.observe(editor);
     if (wrap) ro.observe(wrap);
+    if (lanes) ro.observe(lanes);
     editor._resizeObs = ro;
   }
 
-  function renderLane(name, rows, labelKey, labelFn, laneKey) {
+  const LANE_COUNT = 3;
+
+  function lanesTargetTrackHeight() {
+    const panel = lanesPanel();
+    if (!panel || panel.clientHeight <= 0) return null;
+    return Math.floor((panel.clientHeight - 2) / LANE_COUNT);
+  }
+
+  function scaleLaneLayout(items, targetTrackHeight) {
+    const baseBlockH = 28;
+    const baseGap = 4;
+    const baseTop = 4;
+    const natural = metrical.layoutSublanes(items, baseBlockH, baseGap, baseTop);
+    const naturalH = Math.max(36, natural.trackHeight);
+
+    if (!targetTrackHeight || targetTrackHeight <= 0) {
+      return {
+        layouts: natural.layouts,
+        trackHeight: naturalH,
+        blockHeight: baseBlockH,
+      };
+    }
+
+    const target = targetTrackHeight;
+    let scale = target / naturalH;
+    let blockHeight = Math.max(16, Math.min(64, Math.round(baseBlockH * scale)));
+    let gap = Math.max(1, Math.round(baseGap * scale));
+    let defaultTop = Math.max(2, Math.round(baseTop * scale));
+    let scaled = metrical.layoutSublanes(items, blockHeight, gap, defaultTop);
+
+    if (scaled.trackHeight > target && blockHeight > 16) {
+      scale = target / scaled.trackHeight;
+      blockHeight = Math.max(16, Math.round(blockHeight * scale));
+      gap = Math.max(1, Math.round(gap * scale));
+      defaultTop = Math.max(2, Math.round(defaultTop * scale));
+      scaled = metrical.layoutSublanes(items, blockHeight, gap, defaultTop);
+    }
+
+    if (scaled.trackHeight < target) {
+      const padTop = Math.floor((target - scaled.trackHeight) / 2);
+      scaled.layouts.forEach((l) => {
+        l.top += padTop;
+      });
+    }
+
+    return {
+      layouts: scaled.layouts,
+      trackHeight: target,
+      blockHeight,
+    };
+  }
+
+  function renderLane(name, rows, labelKey, labelFn, laneKey, targetTrackHeight) {
     const lane = document.createElement("div");
     lane.className = "lane";
     const label = document.createElement("span");
@@ -792,10 +849,9 @@
     lane.appendChild(track);
 
     const bars = annotations.bars || [];
-    const blockHeight = 28;
     const items = metrical.assignSublanes(rows || [], bars);
-    const { layouts, trackHeight } = metrical.layoutSublanes(items, blockHeight, 4, 4);
-    track.style.height = `${Math.max(36, trackHeight)}px`;
+    const { layouts, trackHeight, blockHeight } = scaleLaneLayout(items, targetTrackHeight);
+    track.style.height = `${trackHeight}px`;
 
     const colorIdx = new Map();
     const rowIndex = new Map();
@@ -832,14 +888,16 @@
     lanesEl().innerHTML = "";
     lanesEl().style.width = `${contentWidth()}px`;
     if (!annotations) return;
-    renderLane("Sections", annotations.sections || [], "section", null, "sections");
-    renderLane("Chords", annotations.chords || [], "chord", null, "chords");
+    const targetTrackHeight = lanesTargetTrackHeight();
+    renderLane("Sections", annotations.sections || [], "section", null, "sections", targetTrackHeight);
+    renderLane("Chords", annotations.chords || [], "chord", null, "chords", targetTrackHeight);
     renderLane(
       "Soloists",
       annotations.soloists || [],
       "musician_id",
       (row) => musicianLabel(parseInt(row.musician_id, 10)),
-      "soloists"
+      "soloists",
+      targetTrackHeight
     );
   }
 
