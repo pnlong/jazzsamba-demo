@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Center-crop band photos (named by musician_id) to squares in place.
 
-For each image of size W×H, take N = min(W, H) and overwrite with the centered
-N×N square JPEG.
+For each image of size W×H, take N = min(W, H). Portrait shots are cropped
+from the top center so faces stay in frame; landscape shots use a vertical
+center crop. Overwrites each file as a square JPEG.
 
 Expected filenames under ``img/band/``: ``0.jpg``, ``1.jpg``, … matching
 ``musician_id`` in the JazzSAMBA musicians table / site.js BAND list.
@@ -32,11 +33,11 @@ ID_NAME = re.compile(r"^(\d+)$")
 
 
 def center_square_crop(img: Image.Image) -> Image.Image:
-    """Return a centered N×N crop where N = min(width, height)."""
+    """Return an N×N crop where N = min(width, height), top-anchored for portraits."""
     w, h = img.size
     n = min(w, h)
     left = (w - n) // 2
-    top = (h - n) // 2
+    top = 0 if h >= w else (h - n) // 2
     return img.crop((left, top, left + n, top + n))
 
 
