@@ -792,6 +792,19 @@
     return Math.floor((panel.clientHeight - 2) / LANE_COUNT);
   }
 
+  function centerLayoutsInTrack(layouts, blockHeight, trackHeight) {
+    if (!layouts.length || !trackHeight) return;
+    const minTop = Math.min(...layouts.map((l) => l.top));
+    const maxBottom = Math.max(...layouts.map((l) => l.top + blockHeight));
+    const contentH = maxBottom - minTop;
+    const offset = Math.floor((trackHeight - contentH) / 2) - minTop;
+    if (offset !== 0) {
+      layouts.forEach((l) => {
+        l.top += offset;
+      });
+    }
+  }
+
   function scaleLaneLayout(items, targetTrackHeight) {
     const baseBlockH = 28;
     const baseGap = 4;
@@ -800,6 +813,7 @@
     const naturalH = Math.max(36, natural.trackHeight);
 
     if (!targetTrackHeight || targetTrackHeight <= 0) {
+      centerLayoutsInTrack(natural.layouts, baseBlockH, naturalH);
       return {
         layouts: natural.layouts,
         trackHeight: naturalH,
@@ -822,12 +836,7 @@
       scaled = metrical.layoutSublanes(items, blockHeight, gap, defaultTop);
     }
 
-    if (scaled.trackHeight < target) {
-      const padTop = Math.floor((target - scaled.trackHeight) / 2);
-      scaled.layouts.forEach((l) => {
-        l.top += padTop;
-      });
-    }
+    centerLayoutsInTrack(scaled.layouts, blockHeight, target);
 
     return {
       layouts: scaled.layouts,
@@ -1138,14 +1147,6 @@
       }
       if (ev.target.closest(".lane-label")) return;
       seekFromClientX(ev.clientX, lanesPanel());
-    });
-    waveformWrap().addEventListener("scroll", () => {
-      if (syncingScroll) return;
-      followPlayhead = false;
-      updateFollowUI();
-      syncingScroll = true;
-      lanesPanel().scrollLeft = waveformWrap().scrollLeft;
-      syncingScroll = false;
     });
     lanesPanel().addEventListener("scroll", () => {
       if (syncingScroll) return;

@@ -665,6 +665,13 @@ body.filter-modal-open {
   cursor: crosshair;
   display: flex;
   align-items: stretch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#waveform-wrap::-webkit-scrollbar {
+  display: none;
+  height: 0;
 }
 
 #waveform {
