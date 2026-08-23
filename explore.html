@@ -32,60 +32,19 @@
   <main class="site-main">
     <div class="explorer-layout">
       <aside class="explorer-sidebar">
-        <div class="filter-group">
-          <p class="filter-group-label">Recording</p>
-          <div class="filter-field">
-            <label for="protocol-filter">Protocol</label>
-            <select id="protocol-filter">
-              <option value="all">All</option>
-              <option value="async">Asynchronous</option>
-              <option value="sync">Synchronous</option>
-            </select>
-          </div>
-          <div class="filter-field">
-            <label for="musician-filter">Musician</label>
-            <select id="musician-filter">
-              <option value="all">All</option>
-            </select>
-          </div>
-        </div>
-        <div class="filter-group">
-          <div class="filter-group-head">
-            <p class="filter-group-label">Repertoire</p>
-            <button type="button" class="filter-reset" id="filter-reset">Reset</button>
-          </div>
-          <div class="filter-field">
-            <label for="genre-filter">Genre</label>
-            <select id="genre-filter">
-              <option value="all">All</option>
-            </select>
-          </div>
-          <div class="filter-field">
-            <label for="form-filter">Form</label>
-            <select id="form-filter">
-              <option value="all">All</option>
-            </select>
-          </div>
-          <div class="filter-field">
-            <label for="key-filter">Key</label>
-            <select id="key-filter">
-              <option value="all">All</option>
-            </select>
-          </div>
-          <div class="filter-field">
-            <label for="time-filter">Time signature</label>
-            <select id="time-filter">
-              <option value="all">All</option>
-            </select>
-          </div>
-          <div class="filter-field">
-            <label for="swung-filter">Rhythm</label>
-            <select id="swung-filter">
-              <option value="all">All</option>
-              <option value="True">Swung</option>
-              <option value="False">Straight</option>
-            </select>
-          </div>
+        <div class="sidebar-search-row">
+          <label class="visually-hidden" for="song-search">Search songs</label>
+          <input id="song-search" type="search" placeholder="Title, artist, id…" />
+          <button
+            type="button"
+            id="filter-open-btn"
+            class="filter-open-btn"
+            aria-haspopup="dialog"
+            aria-controls="filter-modal"
+            aria-expanded="false"
+          >
+            Filters
+          </button>
         </div>
         <p class="song-list-label" id="song-list-count"></p>
         <ul class="song-list" id="song-list"></ul>
@@ -132,6 +91,80 @@
     </div>
     <audio id="audio" preload="metadata"></audio>
   </main>
+
+  <div id="filter-modal" class="filter-modal" hidden role="dialog" aria-modal="true" aria-labelledby="filter-modal-title">
+    <button type="button" class="filter-modal-backdrop" id="filter-modal-backdrop" aria-label="Close filters"></button>
+    <div class="filter-modal-panel">
+      <div class="filter-modal-header">
+        <h2 id="filter-modal-title">Filters</h2>
+        <button type="button" class="filter-modal-close" id="filter-modal-close" aria-label="Close">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="filter-modal-body">
+        <div class="filter-group">
+          <p class="filter-group-label">Recording</p>
+          <div class="filter-field">
+            <label for="protocol-filter">Protocol</label>
+            <select id="protocol-filter">
+              <option value="all">All</option>
+              <option value="async">Asynchronous</option>
+              <option value="sync">Synchronous</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <div class="musician-filter-head">
+              <span class="filter-field-title">Musicians</span>
+              <label class="check-inline">
+                <input type="checkbox" id="musician-select-all" checked />
+                Select all
+              </label>
+            </div>
+            <div id="musician-checkboxes" class="musician-checkboxes"></div>
+          </div>
+        </div>
+        <div class="filter-group">
+          <p class="filter-group-label">Repertoire</p>
+          <div class="filter-field">
+            <label for="genre-filter">Genre</label>
+            <select id="genre-filter">
+              <option value="all">All</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="form-filter">Form</label>
+            <select id="form-filter">
+              <option value="all">All</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="key-filter">Key</label>
+            <select id="key-filter">
+              <option value="all">All</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="time-filter">Time signature</label>
+            <select id="time-filter">
+              <option value="all">All</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="swung-filter">Rhythm</label>
+            <select id="swung-filter">
+              <option value="all">All</option>
+              <option value="True">Swung</option>
+              <option value="False">Straight</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="filter-modal-footer">
+        <button type="button" class="filter-reset" id="filter-reset">Reset filters</button>
+        <button type="button" class="btn btn-primary filter-done-btn" id="filter-modal-done">Done</button>
+      </div>
+    </div>
+  </div>
 
   <footer class="site-footer">
     Mix-only explorer · stems in the dataset download

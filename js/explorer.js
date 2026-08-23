@@ -15,7 +15,6 @@
 
   const FILTER_SELECT_IDS = [
     "protocol-filter",
-    "musician-filter",
     "genre-filter",
     "form-filter",
     "key-filter",
@@ -148,15 +147,18 @@
       .filter((n) => Number.isFinite(n));
   }
 
-  function syncExplorerUrl({ songId, musicianId, repertoire } = {}) {
+  function syncExplorerUrl({ songId, musicianIds, repertoire } = {}) {
     const url = new URL(location.href);
     if (songId !== undefined) {
       if (songId) url.searchParams.set("song_id", String(songId));
       else url.searchParams.delete("song_id");
     }
-    if (musicianId !== undefined) {
-      if (musicianId && musicianId !== "all") url.searchParams.set("musician_id", String(musicianId));
-      else url.searchParams.delete("musician_id");
+    if (musicianIds !== undefined) {
+      if (musicianIds && musicianIds.length) {
+        url.searchParams.set("musician_id", musicianIds.join(","));
+      } else {
+        url.searchParams.delete("musician_id");
+      }
     }
     if (repertoire) {
       for (const [param, val] of Object.entries(repertoire)) {
@@ -215,22 +217,117 @@
     if (swungEl) swungEl.value = "all";
   }
 
-  function populateMusicianFilter() {
-    const select = document.getElementById("musician-filter");
-    if (!select) return;
-    const musicians = (catalog.musicians || []).slice().sort((a, b) => a.musician_id - b.musician_id);
-    select.innerHTML =
-      `<option value="all">All</option>` +
-      musicians
-        .map(
-          (m) =>
-            `<option value="${m.musician_id}">${musicianLabel(m.musician_id)} · id ${m.musician_id}</option>`
-        )
-        .join("");
-    const want = new URLSearchParams(location.search).get("musician_id");
-    if (want && musicians.some((m) => m.musician_id === Number(want))) {
-      select.value = want;
+  function resetAllFilters() {
+    const proto = document.getElementById("protocol-filter");
+    if (proto) proto.value = "all";
+    setAllMusiciansChecked(true);
+    resetRepertoireFilters();
+  }
+
+  function allMusicianIds() {
+    return (catalog.musicians || [])
+      .map((m) => m.musician_id)
+      .filter((id) => Number.isFinite(id));
+  }
+
+  function musicianCheckboxEls() {
+    return Array.from(document.querySelectorAll("#musician-checkboxes input[data-musician-id]"));
+  }
+
+  function setAllMusiciansChecked(checked) {
+    musicianCheckboxEls().forEach((el) => {
+      el.checked = checked;
+    });
+    const selectAll = document.getElementById("musician-select-all");
+    if (selectAll) {
+      selectAll.checked = checked;
+      selectAll.indeterminate = false;
     }
+  }
+
+  function syncMusicianSelectAll() {
+    const boxes = musicianCheckboxEls();
+    const selectAll = document.getElementById("musician-select-all");
+    if (!selectAll || !boxes.length) return;
+    const checkedCount = boxes.filter((el) => el.checked).length;
+    selectAll.checked = checkedCount === boxes.length;
+    selectAll.indeterminate = checkedCount > 0 && checkedCount < boxes.length;
+  }
+
+  function getSelectedMusicianIds() {
+    const boxes = musicianCheckboxEls();
+    const allIds = allMusicianIds();
+    const checked = boxes.filter((el) => el.checked).map((el) => Number(el.dataset.musicianId));
+    if (!boxes.length || checked.length === allIds.length) return null;
+    return checked;
+  }
+
+  function populateMusicianCheckboxes() {
+    const container = document.getElementById("musician-checkboxes");
+    if (!container) return;
+    const musicians = (catalog.musicians || []).slice().sort((a, b) => a.musician_id - b.musician_id);
+    container.innerHTML = musicians
+      .map(
+        (m) =>
+          `<label><input type="checkbox" data-musician-id="${m.musician_id}" checked /> ${musicianLabel(m.musician_id)} · id ${m.musician_id}</label>`
+      )
+      .join("");
+
+    const params = new URLSearchParams(location.search);
+    const wantRaw = params.get("musician_id");
+    if (wantRaw) {
+      const want = wantRaw
+        .split(",")
+        .map((s) => parseInt(s.trim(), 10))
+        .filter((n) => Number.isFinite(n));
+      if (want.length) {
+        musicianCheckboxEls().forEach((el) => {
+          el.checked = want.includes(Number(el.dataset.musicianId));
+        });
+      }
+    }
+    syncMusicianSelectAll();
+  }
+
+  function filtersAreActive() {
+    const proto = document.getElementById("protocol-filter");
+    if (proto && proto.value !== "all") return true;
+    if (getSelectedMusicianIds() !== null) return true;
+    for (const { selectId } of CATALOG_FILTERS) {
+      const el = document.getElementById(selectId);
+      if (el && el.value !== "all") return true;
+    }
+    const swungEl = document.getElementById("swung-filter");
+    if (swungEl && swungEl.value !== "all") return true;
+    return false;
+  }
+
+  function updateFilterButtonUI() {
+    const btn = document.getElementById("filter-open-btn");
+    if (!btn) return;
+    btn.classList.toggle("is-active", filtersAreActive());
+  }
+
+  function openFilterModal() {
+    const modal = document.getElementById("filter-modal");
+    const btn = document.getElementById("filter-open-btn");
+    if (!modal) return;
+    modal.hidden = false;
+    if (btn) btn.setAttribute("aria-expanded", "true");
+    document.body.classList.add("filter-modal-open");
+    document.getElementById("filter-modal-close")?.focus();
+  }
+
+  function closeFilterModal() {
+    const modal = document.getElementById("filter-modal");
+    const btn = document.getElementById("filter-open-btn");
+    if (!modal) return;
+    modal.hidden = true;
+    if (btn) {
+      btn.setAttribute("aria-expanded", "false");
+      btn.focus();
+    }
+    document.body.classList.remove("filter-modal-open");
   }
 
   function setBothScrollLeft(left) {
@@ -438,26 +535,40 @@
   }
 
   function filteredSongs() {
+    const q = (document.getElementById("song-search").value || "").trim().toLowerCase();
     const proto = document.getElementById("protocol-filter").value;
-    const musicianVal = document.getElementById("musician-filter").value;
-    const musicianId = musicianVal === "all" ? null : parseInt(musicianVal, 10);
+    const musicianIds = getSelectedMusicianIds();
     const swungVal = document.getElementById("swung-filter").value;
     return (catalog.songs || []).filter((s) => {
       if (proto === "async" && s.synchronous) return false;
       if (proto === "sync" && !s.synchronous) return false;
-      if (musicianId !== null && !songMusicianIds(s).includes(musicianId)) return false;
+      if (musicianIds !== null) {
+        if (!musicianIds.length) return false;
+        const roster = songMusicianIds(s);
+        if (!roster.some((id) => musicianIds.includes(id))) return false;
+      }
       for (const { selectId, field } of CATALOG_FILTERS) {
         const val = document.getElementById(selectId).value;
         if (val !== "all" && String(s[field] || "") !== val) return false;
       }
       if (swungVal !== "all" && String(s.is_swung || "") !== swungVal) return false;
-      return true;
+      if (!q) return true;
+      return (
+        String(s.title).toLowerCase().includes(q) ||
+        String(s.artist || "").toLowerCase().includes(q) ||
+        String(s.song_id).includes(q) ||
+        songMusicianIds(s).some((id) => String(id).includes(q))
+      );
     });
   }
 
   function onFiltersChanged() {
-    const musicianVal = document.getElementById("musician-filter").value;
-    syncExplorerUrl({ musicianId: musicianVal, repertoire: repertoireFilterState() });
+    const musicianIds = getSelectedMusicianIds();
+    syncExplorerUrl({
+      musicianIds: musicianIds === null ? [] : musicianIds,
+      repertoire: repertoireFilterState(),
+    });
+    updateFilterButtonUI();
     renderSongList();
     const songs = filteredSongs();
     if (!songs.length) {
@@ -467,6 +578,16 @@
     if (!currentSong || !songs.some((s) => s.song_id === currentSong.song_id)) {
       loadSong(songs[0]).catch((e) => setStatus(e.message));
     } else {
+      setStatus("Better-take mixture · stems available in the Zenodo download");
+    }
+  }
+
+  function onSearchChanged() {
+    updateFilterButtonUI();
+    renderSongList();
+    const songs = filteredSongs();
+    if (!songs.length) setStatus("No songs match these filters.");
+    else if (currentSong && songs.some((s) => s.song_id === currentSong.song_id)) {
       setStatus("Better-take mixture · stems available in the Zenodo download");
     }
   }
@@ -619,13 +740,32 @@
       playPauseBtn().click();
     });
     document.getElementById("protocol-filter").addEventListener("change", onFiltersChanged);
-    document.getElementById("musician-filter").addEventListener("change", onFiltersChanged);
-    FILTER_SELECT_IDS.slice(2).forEach((id) => {
+    FILTER_SELECT_IDS.slice(1).forEach((id) => {
       document.getElementById(id).addEventListener("change", onFiltersChanged);
     });
+    document.getElementById("song-search").addEventListener("input", onSearchChanged);
+    document.getElementById("filter-open-btn").addEventListener("click", openFilterModal);
+    document.getElementById("filter-modal-close").addEventListener("click", closeFilterModal);
+    document.getElementById("filter-modal-done").addEventListener("click", closeFilterModal);
+    document.getElementById("filter-modal-backdrop").addEventListener("click", closeFilterModal);
     document.getElementById("filter-reset").addEventListener("click", () => {
-      resetRepertoireFilters();
+      resetAllFilters();
       onFiltersChanged();
+    });
+    document.getElementById("musician-select-all").addEventListener("change", (ev) => {
+      setAllMusiciansChecked(ev.target.checked);
+      onFiltersChanged();
+    });
+    document.getElementById("musician-checkboxes").addEventListener("change", () => {
+      syncMusicianSelectAll();
+      onFiltersChanged();
+    });
+    window.addEventListener("keydown", (ev) => {
+      const modal = document.getElementById("filter-modal");
+      if (ev.key === "Escape" && modal && !modal.hidden) {
+        ev.preventDefault();
+        closeFilterModal();
+      }
     });
     updateFollowUI();
 
@@ -634,8 +774,9 @@
       musiciansById = Object.fromEntries(
         (catalog.musicians || []).map((m) => [m.musician_id, m])
       );
-      populateMusicianFilter();
+      populateMusicianCheckboxes();
       populateCatalogFilters();
+      updateFilterButtonUI();
       renderSongList();
       const params = new URLSearchParams(location.search);
       const want = params.get("song_id");
