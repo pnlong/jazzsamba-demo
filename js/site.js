@@ -85,6 +85,10 @@
     return synchronous ? "Synchronous" : "Asynchronous";
   }
 
+  function protocolShortLabel(synchronous) {
+    return synchronous ? "S" : "A";
+  }
+
   function protocolChipClass(synchronous) {
     return synchronous ? "chip-sync" : "chip-async";
   }
@@ -237,6 +241,7 @@
     loadCatalog,
     initials,
     protocolLabel,
+    protocolShortLabel,
     protocolChipClass,
     titleCaseWords,
   };

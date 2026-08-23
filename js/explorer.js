@@ -4,7 +4,7 @@
   const LABEL_W = 96;
   const SCROLL_MARGIN = 100;
   const metrical = window.JazzSambaMetrical;
-  const { loadCatalog, protocolLabel, protocolChipClass, titleCaseWords } = window.JazzSambaSite;
+  const { loadCatalog, protocolLabel, protocolShortLabel, protocolChipClass, titleCaseWords } = window.JazzSambaSite;
 
   const CATALOG_FILTERS = [
     { selectId: "genre-filter", field: "genre", urlParam: "genre", label: (v) => titleCaseWords(v) },
@@ -276,7 +276,7 @@
     container.innerHTML = musicians
       .map(
         (m) =>
-          `<label><input type="checkbox" data-musician-id="${m.musician_id}" checked /> ${m.name} (${m.musician_id})</label>`
+          `<label><input type="checkbox" data-musician-id="${m.musician_id}" checked /> ${musicianLabel(m.musician_id)}</label>`
       )
       .join("");
 
@@ -1052,8 +1052,11 @@
         <button type="button" data-song-id="${s.song_id}" class="${
           currentSong && currentSong.song_id === s.song_id ? "active" : ""
         }">
-          <span class="title">${s.title}</span>
-          <span class="meta">${protocolLabel(s.synchronous)} · #${s.song_id}</span>
+          <span class="song-list-row">
+            <span class="song-id">#${s.song_id}</span>
+            <span class="chip chip-protocol ${protocolChipClass(s.synchronous)}" aria-label="${protocolLabel(s.synchronous)}">${protocolShortLabel(s.synchronous)}</span>
+            <span class="title">${s.title}</span>
+          </span>
         </button>
       </li>`
       )
