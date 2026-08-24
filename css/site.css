@@ -229,11 +229,10 @@
 }
 
 .corpus-figure {
-  background: var(--bg-card);
+  background: transparent;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius);
   padding: 0.85rem 1rem 1rem;
-  box-shadow: var(--shadow);
 }
 
 .corpus-figure-img {
@@ -241,7 +240,7 @@
   width: 100%;
   height: auto;
   border-radius: calc(var(--radius) - 2px);
-  background: var(--bg-main);
+  background: transparent;
 }
 
 .corpus-figure--single .corpus-figure-img {
