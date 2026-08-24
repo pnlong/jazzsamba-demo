@@ -256,13 +256,83 @@
   padding: 0.65rem 0.75rem 0.9rem;
 }
 
-.overview-figure a {
+.overview-figure-open {
   display: block;
-  text-decoration: none;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+  border-radius: calc(var(--radius) - 2px);
+}
+
+.overview-figure-open:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 3px;
 }
 
 .overview-figure .corpus-figure-img {
   background: var(--bg-main);
+}
+
+.overview-figure figcaption {
+  text-align: left;
+}
+
+.overview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(28, 19, 21, 0.88);
+  backdrop-filter: blur(6px);
+}
+
+.overview-modal[hidden] {
+  display: none;
+}
+
+.overview-modal-img {
+  display: block;
+  max-width: min(100%, 96vw);
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--radius);
+  background: var(--bg-main);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.overview-modal-close {
+  position: fixed;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 81;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid rgba(250, 248, 245, 0.35);
+  border-radius: var(--radius);
+  background: rgba(28, 19, 21, 0.55);
+  color: var(--bg-main);
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.overview-modal-close:hover,
+.overview-modal-close:focus-visible {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  outline: none;
+}
+
+body.overview-modal-open {
+  overflow: hidden;
 }
 
 .corpus-figure figcaption {

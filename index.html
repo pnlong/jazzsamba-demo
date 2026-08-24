@@ -81,7 +81,14 @@
         assets, and form-aligned annotations on a shared bar grid.
       </p>
       <figure class="corpus-figure overview-figure">
-        <a href="img/overview/JazzSAMBA_diagram.png" target="_blank" rel="noopener">
+        <button
+          type="button"
+          class="overview-figure-open"
+          id="overview-figure-open"
+          aria-haspopup="dialog"
+          aria-controls="overview-modal"
+          aria-label="Open dataset overview at full resolution"
+        >
           <img
             class="corpus-figure-img"
             src="img/overview/JazzSAMBA_diagram.png"
@@ -90,13 +97,36 @@
             width="2400"
             height="600"
           />
-        </a>
+        </button>
         <figcaption>
-          Dual recording protocols, better/worse take tiers, and multi-layer annotations.
-          Click for full resolution.
+          <strong>B</strong> and <strong>W</strong> denote better and worse take tiers.
+          Asynchronous songs include trumpet and one saxophone, either alto or tenor but not both.
+          Drums are recorded first; later instruments may follow in any order, and the sequence shown is only one example.
+          Annotations authored on the better mixture are copied onto the worse tier.
+          Synchronous songs include trumpet and/or saxophone with the full band recording together, and each take is annotated separately.
+          Click the figure for full screen.
         </figcaption>
       </figure>
     </section>
+
+    <div
+      class="overview-modal"
+      id="overview-modal"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-label="JazzSAMBA dataset overview"
+    >
+      <button type="button" class="overview-modal-close" id="overview-modal-close" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <img
+        class="overview-modal-img"
+        id="overview-modal-img"
+        src="img/overview/JazzSAMBA_diagram.png"
+        alt="JazzSAMBA overview diagram at full resolution"
+      />
+    </div>
 
     <hr class="section-rule" />
 

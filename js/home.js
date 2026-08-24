@@ -87,9 +87,41 @@
     });
   }
 
+  function wireOverviewModal() {
+    const openBtn = document.getElementById("overview-figure-open");
+    const modal = document.getElementById("overview-modal");
+    const closeBtn = document.getElementById("overview-modal-close");
+    if (!openBtn || !modal || !closeBtn) return;
+
+    let lastFocus = null;
+
+    function openModal() {
+      lastFocus = document.activeElement;
+      modal.hidden = false;
+      document.body.classList.add("overview-modal-open");
+      closeBtn.focus();
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      document.body.classList.remove("overview-modal-open");
+      if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+    }
+
+    openBtn.addEventListener("click", openModal);
+    closeBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) closeModal();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !modal.hidden) closeModal();
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", async () => {
     renderAuthors(document.getElementById("author-list"));
     renderAffils(document.getElementById("affil-legend"));
+    wireOverviewModal();
     try {
       const catalog = await loadCatalog();
       renderStats(catalog);
