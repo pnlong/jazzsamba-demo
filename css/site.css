@@ -245,10 +245,10 @@
 }
 
 .corpus-figure--single .corpus-figure-img {
-  max-height: min(48vh, 320px);
-  width: auto;
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
+  height: auto;
+  margin: 0;
 }
 
 /* Wide paper overview banner (home): full content width, no max-height crop */
