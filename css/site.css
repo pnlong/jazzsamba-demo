@@ -245,7 +245,14 @@
   background: transparent;
 }
 
-.corpus-figure--single .corpus-figure-img {
+/* About catalog plots: uniform card width; images fill the card */
+.corpus-plots .corpus-figure {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
+}
+
+.corpus-plots .corpus-figure-img {
   width: 100%;
   max-width: 100%;
   height: auto;
@@ -274,7 +281,8 @@
 }
 
 .overview-figure .corpus-figure-img {
-  background: var(--bg-main);
+  width: 100%;
+  background: var(--bg-card);
 }
 
 .overview-figure figcaption {
@@ -305,7 +313,7 @@
   height: auto;
   object-fit: contain;
   border-radius: var(--radius);
-  background: var(--bg-main);
+  background: var(--bg-card);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
