@@ -229,6 +229,7 @@
 }
 
 .corpus-figure {
+  margin: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius);
