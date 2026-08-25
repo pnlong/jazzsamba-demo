@@ -2,23 +2,21 @@
 (function (global) {
   const AUTHORS = [
     { name: "Phillip Long", affil: 1, band: true },
-    { name: "Jacob Nguyen", affil: 2, band: true },
-    { name: "Jace Hosto", affil: 3, band: true },
-    { name: "Gage Hosto", affil: 3, band: true },
-    { name: "Jett Takazawa", affil: 2, band: true },
+    { name: "Jacob Nguyen", affil: null, band: true },
+    { name: "Jace Hosto", affil: null, band: true },
+    { name: "Gage Hosto", affil: null, band: true },
+    { name: "Jett Takazawa", affil: null, band: true },
     { name: "Fares Nofal", affil: null, band: true },
     { name: "Sebastian Stade", affil: null, band: true },
-    { name: "Nithya Shikarpur", affil: 4, band: false },
+    { name: "Nithya Shikarpur", affil: 2, band: false },
     { name: "Julian McAuley", affil: 1, band: false },
-    { name: "Cheng-Zhi Anna Huang", affil: 4, band: false },
-    { name: "Aleksandra Teng Ma", affil: 4, band: false },
-    { name: "Stephen Brade", affil: 4, band: false },
+    { name: "Cheng-Zhi Anna Huang", affil: 2, band: false },
+    { name: "Aleksandra Teng Ma", affil: 2, band: false },
+    { name: "Stephen Brade", affil: 2, band: false },
   ];
 
   const AFFILS = [
     "University of California, San Diego",
-    "Boston College",
-    "College of the Ozarks",
     "Massachusetts Institute of Technology",
   ];
 
