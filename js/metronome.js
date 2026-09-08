@@ -11,8 +11,9 @@ function createMetronomeUI({
 } = {}) {
   const LOOKAHEAD_MS = 40;
   const LOOKAHEAD_HIDDEN_MS = 250;
-  const SCHEDULE_AHEAD_VISIBLE_SEC = 0.4;
-  const SCHEDULE_AHEAD_HIDDEN_SEC = 30;
+  const SCHEDULE_AHEAD_VISIBLE_SEC = 0.25;
+  // Keep this modest: long burst schedules drift badly if <audio> stalls while the tab is hidden.
+  const SCHEDULE_AHEAD_HIDDEN_SEC = 2.0;
   const MAX_SCHEDULE_PER_PASS = 512;
   const EPS = 0.001;
 
@@ -27,6 +28,7 @@ function createMetronomeUI({
   let hintedEmpty = false;
   let unsubscribe = null;
   let onVisibilityChange = null;
+  let lastClockSample = null;
 
   function tabIsHidden() {
     return typeof document !== 'undefined' && document.visibilityState === 'hidden';
@@ -114,9 +116,9 @@ function createMetronomeUI({
     const ctx = transport?.getAudioContext?.();
     if (!ctx || !ensureBuffers(ctx)) return false;
     const when = transport.timelineToContextTime(beat.t);
-    if (when == null) return false;
-    const minWhen = ctx.currentTime + 0.002;
-    const startWhen = when < minWhen ? minWhen : when;
+    // Drop late beats instead of clamping to "now" (clamping bunches clicks off-grid
+    // after seeks / buffering stalls when AudioContext runs ahead of <audio>).
+    if (when == null || when < ctx.currentTime - 0.02) return false;
     const source = ctx.createBufferSource();
     source.buffer = beat.accent ? accentBuf : tickBuf;
     const gain = ctx.createGain();
@@ -124,11 +126,11 @@ function createMetronomeUI({
     source.connect(gain);
     gain.connect(ctx.destination);
     try {
-      source.start(startWhen);
+      source.start(when);
     } catch (_) {
       return false;
     }
-    scheduled.push({ source, when: startWhen });
+    scheduled.push({ source, when, beatT: beat.t });
     source.onended = () => {
       scheduled = scheduled.filter(s => s.source !== source);
     };
@@ -145,8 +147,26 @@ function createMetronomeUI({
     const nowT = transport.getCurrentTime?.() ?? 0;
     const timelineHorizon = nowT + aheadSec;
     const contextHorizon = ctx.currentTime + aheadSec;
-    let scheduledCount = 0;
 
+    // Detect HTMLMediaElement stall/ramp vs AudioContext and resync when they diverge.
+    if (lastClockSample) {
+      const dCtx = ctx.currentTime - lastClockSample.ctx;
+      const dAudio = nowT - lastClockSample.audio;
+      if (dCtx > 0.04) {
+        const lag = dCtx - dAudio;
+        if (lag > 0.02) {
+          // Media behind the click clock — drop pending clicks and realign.
+          cancelScheduled();
+          nextIndex = beatTimes.findIndex(b => b.t >= nowT - EPS);
+          if (nextIndex < 0) nextIndex = beatTimes.length;
+          lastClockSample = { audio: nowT, ctx: ctx.currentTime };
+          if (dAudio < dCtx * 0.5) return;
+        }
+      }
+    }
+    lastClockSample = { audio: nowT, ctx: ctx.currentTime };
+
+    let scheduledCount = 0;
     while (nextIndex < beatTimes.length && scheduledCount < MAX_SCHEDULE_PER_PASS) {
       const beat = beatTimes[nextIndex];
       if (hidden && beat.t > timelineHorizon) break;
@@ -156,6 +176,18 @@ function createMetronomeUI({
       if (!hidden && when > contextHorizon) break;
       if (hidden && when > contextHorizon + 0.5) break;
 
+      // Past the grace window: skip without scheduling (do not clamp to "now").
+      if (when < ctx.currentTime - 0.02) {
+        nextIndex += 1;
+        continue;
+      }
+
+      // Already queued from a prior pass.
+      if (scheduled.some(s => Math.abs(s.beatT - beat.t) < EPS)) {
+        nextIndex += 1;
+        continue;
+      }
+
       if (scheduleClick(beat)) scheduledCount += 1;
       nextIndex += 1;
     }
@@ -164,6 +196,7 @@ function createMetronomeUI({
   function reschedule() {
     cancelScheduled();
     stopTimer();
+    lastClockSample = null;
     if (!enabled) return;
     beatTimes = buildBeatTimes();
     if (!beatTimes.length) {

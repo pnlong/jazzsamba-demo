@@ -60,6 +60,9 @@
   function createMetroTransport() {
     let playbackContext = null;
     const listeners = new Set();
+    // HTMLMediaElement keeps paused=false while buffering; metronome must not
+    // schedule on the AudioContext clock during those stalls or clicks run ahead.
+    let mediaWaiting = false;
 
     async function ensureAudioContext() {
       if (!playbackContext || playbackContext.state === "closed") {
@@ -85,19 +88,29 @@
       }
     }
 
+    function isActivelyPlaying() {
+      const a = audio();
+      return Boolean(a && !a.paused && !a.ended && !mediaWaiting);
+    }
+
     return {
       ensureAudioContext,
-      isPlaying: () => !audio().paused,
+      isPlaying: isActivelyPlaying,
       getCurrentTime: () => Math.max(0, audio().currentTime || 0),
       getAudioContext: () =>
         playbackContext && playbackContext.state !== "closed" ? playbackContext : null,
       timelineToContextTime(t) {
         const a = audio();
-        if (!a || a.paused || !playbackContext || playbackContext.state === "closed") return null;
+        if (!a || !isActivelyPlaying() || !playbackContext || playbackContext.state === "closed") {
+          return null;
+        }
         const timelineT = Number(t);
         if (!Number.isFinite(timelineT)) return null;
         const audioT = Number.isFinite(a.currentTime) ? a.currentTime : 0;
         return playbackContext.currentTime + (timelineT - audioT);
+      },
+      setMediaWaiting(waiting) {
+        mediaWaiting = Boolean(waiting);
       },
       onTransportChange(cb) {
         if (typeof cb !== "function") return () => {};
@@ -1167,7 +1180,7 @@
         }
         cancelAnimationFrame(raf);
         raf = requestAnimationFrame(syncPlayhead);
-        metroTransport.notify("play");
+        // Metronome start is driven by audio `playing` / `play` once media is ready.
       } else {
         a.pause();
         updatePlayPauseUI();
@@ -1231,11 +1244,18 @@
     timelineViewport()?.addEventListener("scroll", () => syncTimelineScrollFrom("viewport"));
     timelineScroll()?.addEventListener("scroll", () => syncTimelineScrollFrom("scroll"));
     audio().addEventListener("pause", () => {
+      metroTransport.setMediaWaiting(false);
       updatePlayPauseUI();
       metroTransport.notify("pause");
     });
-    audio().addEventListener("play", () => {
+    audio().addEventListener("waiting", () => {
+      // Buffering / seek gap: stop click scheduling until media advances again.
+      metroTransport.setMediaWaiting(true);
+      metroTransport.notify("pause");
+    });
+    audio().addEventListener("playing", () => {
       void (async () => {
+        metroTransport.setMediaWaiting(false);
         await metroTransport.ensureAudioContext();
         updatePlayPauseUI();
         cancelAnimationFrame(raf);
@@ -1243,7 +1263,27 @@
         metroTransport.notify("play");
       })();
     });
+    audio().addEventListener("play", () => {
+      void (async () => {
+        await metroTransport.ensureAudioContext();
+        updatePlayPauseUI();
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(syncPlayhead);
+        // Only start metronome once samples are flowing; `playing` handles resume-after-wait.
+        if (!audio().paused && audio().readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+          metroTransport.setMediaWaiting(false);
+          metroTransport.notify("play");
+        } else {
+          metroTransport.setMediaWaiting(true);
+          metroTransport.notify("pause");
+        }
+      })();
+    });
+    audio().addEventListener("seeked", () => {
+      metroTransport.notify("seek", { t: audio().currentTime || 0 });
+    });
     audio().addEventListener("ended", () => {
+      metroTransport.setMediaWaiting(false);
       updatePlayPauseUI();
       syncPlayhead();
       metroTransport.notify("ended");
