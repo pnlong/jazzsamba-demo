@@ -1,0 +1,32 @@
+{
+  "labels": [
+    "swing",
+    "bossa nova",
+    "ballad",
+    "bebop",
+    "latin",
+    "samba",
+    "waltz",
+    "calypso"
+  ],
+  "async": [
+    19,
+    8,
+    6,
+    5,
+    5,
+    3,
+    3,
+    1
+  ],
+  "sync": [
+    10,
+    4,
+    3,
+    3,
+    2,
+    2,
+    2,
+    0
+  ]
+}

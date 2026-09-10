@@ -21,11 +21,12 @@ Assets are generated from an assembled `JAZZSAMBA_DIR` in the processing repo:
 ```bash
 # in jazz-standard-dataset
 uv run python -m preprocessing.scripts.export_project_page_assets
+uv run python -m preprocessing.scripts.export_demo_chart_data   # About catalog charts
 cd jazzsamba-demo && python -m http.server 8080
 # open http://127.0.0.1:8080
 ```
 
-Use `--skip-audio` to refresh catalog / annotations / peaks without re-encoding MP3s.
+Use `--skip-audio` to refresh catalog / annotations / peaks without re-encoding MP3s. Re-run `export_demo_chart_data` after catalog field changes so About charts stay in sync.
 
 ## Featured samples
 

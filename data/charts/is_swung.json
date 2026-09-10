@@ -1,0 +1,14 @@
+{
+  "labels": [
+    "Swung",
+    "Straight"
+  ],
+  "async": [
+    31,
+    19
+  ],
+  "sync": [
+    16,
+    10
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "labels": [
+    "Trumpet Lead",
+    "Saxophone Lead",
+    "Both Horns Lead"
+  ],
+  "async": [
+    16,
+    17,
+    17
+  ],
+  "sync": [
+    8,
+    3,
+    2
+  ]
+}

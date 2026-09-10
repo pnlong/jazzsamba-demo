@@ -245,11 +245,39 @@
   background: transparent;
 }
 
-/* About catalog plots: uniform card width; images fill the card */
+/* About catalog plots: uniform card width; canvases fill the card */
 .corpus-plots .corpus-figure {
   width: 100%;
   max-width: 100%;
   margin-inline: 0;
+}
+
+.corpus-chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  margin: 0 0 0.35rem;
+}
+
+.corpus-chart-wrap--doughnut {
+  height: 280px;
+  max-width: 360px;
+  margin-inline: auto;
+}
+
+.corpus-chart-wrap--compact {
+  height: 220px;
+}
+
+.corpus-chart-wrap--tall {
+  height: 420px;
+}
+
+.corpus-chart-wrap canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent;
 }
 
 .corpus-plots .corpus-figure-img {
