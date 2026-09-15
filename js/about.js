@@ -4,6 +4,7 @@ import { doughnutChart, stackedBarChart } from "./charts.js";
 
 const CHART_SPECS = [
   { id: "chart-synchronous", file: "synchronous.json", kind: "doughnut" },
+  { id: "chart-instrument-hours", file: "instrument_hours.json", kind: "stacked" },
   { id: "chart-genre", file: "genre.json", kind: "stacked" },
   { id: "chart-form", file: "form.json", kind: "stacked" },
   { id: "chart-year", file: "year.json", kind: "stacked" },
@@ -30,11 +31,23 @@ export async function renderCharts() {
   }
 
   const payloads = await Promise.all(
-    CHART_SPECS.map((spec) => fetchJson(`data/charts/${spec.file}`))
+    CHART_SPECS.map(async (spec) => {
+      try {
+        return await fetchJson(`data/charts/${spec.file}`);
+      } catch (err) {
+        console.warn(err);
+        return null;
+      }
+    })
   );
 
   CHART_SPECS.forEach((spec, i) => {
     const data = payloads[i];
+    if (!data) {
+      const figure = document.getElementById(spec.id)?.closest("figure");
+      if (figure) figure.hidden = true;
+      return;
+    }
     if (spec.kind === "doughnut") {
       doughnutChart(spec.id, data);
     } else {

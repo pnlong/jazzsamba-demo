@@ -11,8 +11,8 @@
     { name: "Nithya Shikarpur", affil: 2, band: false },
     { name: "Julian McAuley", affil: 1, band: false },
     { name: "Cheng-Zhi Anna Huang", affil: 2, band: false },
-    { name: "Aleksandra Teng Ma", affil: 2, band: false },
-    { name: "Stephen Brade", affil: 2, band: false },
+    { name: "Aleksandra Teng Ma", affil: 2, band: false, equal: true },
+    { name: "Stephen Brade", affil: 2, band: false, equal: true },
   ];
 
   const AFFILS = [
@@ -157,7 +157,10 @@
   function renderAuthors(el) {
     if (!el) return;
     const parts = AUTHORS.map((a) => {
-      const sup = a.affil == null ? "" : `<sup>${a.affil}</sup>`;
+      const marks = [];
+      if (a.affil != null) marks.push(String(a.affil));
+      if (a.equal) marks.push("*");
+      const sup = marks.length ? `<sup>${marks.join(",")}</sup>` : "";
       return `${a.name}${sup}`;
     });
     el.innerHTML = parts.join(", ");
@@ -165,7 +168,10 @@
 
   function renderAffils(el) {
     if (!el) return;
-    el.innerHTML = `<ol>${AFFILS.map((a) => `<li>${a}</li>`).join("")}</ol>`;
+    const equalNote = AUTHORS.some((a) => a.equal)
+      ? `<p class="equal-note"><sup>*</sup>Equal contribution.</p>`
+      : "";
+    el.innerHTML = `<ol>${AFFILS.map((a) => `<li>${a}</li>`).join("")}</ol>${equalNote}`;
   }
 
   function initials(name) {

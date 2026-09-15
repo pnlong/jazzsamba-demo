@@ -31,6 +31,10 @@
   margin: 0.1rem 0;
 }
 
+.affil-legend .equal-note {
+  margin: 0.45rem 0 0;
+}
+
 .sample-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -1,0 +1,28 @@
+{
+  "labels": [
+    "Drums",
+    "Bass",
+    "Piano",
+    "Trumpet",
+    "Alto Saxophone",
+    "Tenor Saxophone"
+  ],
+  "async": [
+    10.979,
+    10.621,
+    10.828,
+    4.577,
+    2.255,
+    2.401
+  ],
+  "sync": [
+    5.011,
+    4.614,
+    4.741,
+    1.946,
+    1.294,
+    0.0
+  ],
+  "unit": "hours",
+  "note": "Active hours from section musician annotations (both take tiers; silence while sitting out excluded)."
+}

@@ -21,7 +21,7 @@ function applyChartDefaults() {
 /**
  * Stacked bar: one bar per category (total height), segments async + sync.
  * @param {string} canvasId
- * @param {{ labels: string[], async: number[], sync: number[] }} data
+ * @param {{ labels: string[], async: number[], sync: number[], unit?: string }} data
  * @param {{ horizontal?: boolean }} [opts]
  */
 export function stackedBarChart(canvasId, data, opts = {}) {
@@ -33,6 +33,10 @@ export function stackedBarChart(canvasId, data, opts = {}) {
   const labels = data.labels || [];
   const asyncCounts = data.async || [];
   const syncCounts = data.sync || [];
+  const unit = data.unit === "hours" ? "hours" : "count";
+  const axisTitle = unit === "hours" ? "Hours" : "Count";
+  const formatValue = (v) =>
+    unit === "hours" ? Number(v || 0).toFixed(2) : String(v || 0);
 
   return new Chart(canvas, {
     type: "bar",
@@ -75,12 +79,15 @@ export function stackedBarChart(canvasId, data, opts = {}) {
         },
         tooltip: {
           callbacks: {
+            label(ctx) {
+              return ` ${ctx.dataset.label}: ${formatValue(ctx.raw)}`;
+            },
             afterBody(items) {
               if (!items.length) return "";
               const i = items[0].dataIndex;
               const a = asyncCounts[i] || 0;
               const s = syncCounts[i] || 0;
-              return `Total: ${a + s}`;
+              return `Total: ${formatValue(a + s)}`;
             },
           },
         },
@@ -93,10 +100,13 @@ export function stackedBarChart(canvasId, data, opts = {}) {
             color: horizontal ? GRID_COLOR : "transparent",
             drawBorder: false,
           },
-          ticks: { color: TEXT_MUTED, precision: 0 },
+          ticks: {
+            color: TEXT_MUTED,
+            precision: unit === "hours" ? 1 : 0,
+          },
           title: {
             display: horizontal,
-            text: "Count",
+            text: axisTitle,
             color: TEXT_PRIMARY,
           },
         },
@@ -107,10 +117,13 @@ export function stackedBarChart(canvasId, data, opts = {}) {
             color: horizontal ? "transparent" : GRID_COLOR,
             drawBorder: false,
           },
-          ticks: { color: TEXT_MUTED, precision: 0 },
+          ticks: {
+            color: TEXT_MUTED,
+            precision: unit === "hours" ? 1 : 0,
+          },
           title: {
             display: !horizontal,
-            text: "Count",
+            text: axisTitle,
             color: TEXT_PRIMARY,
           },
         },
