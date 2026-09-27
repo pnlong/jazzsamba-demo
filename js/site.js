@@ -11,8 +11,8 @@
     { name: "Nithya Shikarpur", affil: 2, band: false },
     { name: "Julian McAuley", affil: 1, band: false },
     { name: "Cheng-Zhi Anna Huang", affil: 2, band: false },
-    { name: "Aleksandra Teng Ma", affil: 2, band: false, equal: true },
     { name: "Stephen Brade", affil: 2, band: false, equal: true },
+    { name: "Aleksandra Teng Ma", affil: 2, band: false, equal: true },
   ];
 
   const AFFILS = [
@@ -103,7 +103,7 @@
   const LINKS = {
     code: "https://github.com/pnlong/jazz-standard-dataset",
     package: "https://github.com/pnlong/jazzsamba",
-    zenodo: null,
+    zenodo: "https://zenodo.org/records/22943963",
     paper: null,
   };
 

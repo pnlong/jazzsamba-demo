@@ -8,7 +8,7 @@ Live site: [pnlong.github.io/jazzsamba-demo](https://pnlong.github.io/jazzsamba-
 
 | | |
 |--|--|
-| **Dataset download** | Zenodo (DOI forthcoming) — full FLAC stems, worse takes, MIDI, annotations |
+| **Dataset download** | [Zenodo `10.5281/zenodo.22943963`](https://zenodo.org/records/22943963) — full FLAC stems, worse takes, MIDI, annotations |
 | **Python API** | [`pnlong/jazzsamba`](https://github.com/pnlong/jazzsamba) |
 | **Processing pipeline** | [`pnlong/jazz-standard-dataset`](https://github.com/pnlong/jazz-standard-dataset) — builds the release and exports these web assets |
 
