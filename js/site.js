@@ -102,7 +102,7 @@
 
   const LINKS = {
     code: "https://github.com/pnlong/jazz-standard-dataset",
-    package: "https://github.com/pnlong/jazzsamba",
+    package: "https://pypi.org/project/jazzsamba/",
     zenodo: "https://zenodo.org/records/22943963",
     paper: null,
   };
