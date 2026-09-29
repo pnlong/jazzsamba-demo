@@ -2,12 +2,12 @@
 (function (global) {
   const AUTHORS = [
     { name: "Phillip Long", affil: 1, band: true },
-    { name: "Jacob Nguyen", affil: null, band: true },
-    { name: "Jace Hosto", affil: null, band: true },
-    { name: "Gage Hosto", affil: null, band: true },
-    { name: "Jett Takazawa", affil: null, band: true },
-    { name: "Fares Nofal", affil: null, band: true },
-    { name: "Sebastian Stade", affil: null, band: true },
+    { name: "Jacob Nguyen", affil: 3, band: true },
+    { name: "Jace Hosto", affil: 3, band: true },
+    { name: "Gage Hosto", affil: 3, band: true },
+    { name: "Jett Takazawa", affil: 3, band: true },
+    { name: "Fares Nofal", affil: 3, band: true },
+    { name: "Sebastian Stade", affil: 3, band: true },
     { name: "Nithya Shikarpur", affil: 2, band: false },
     { name: "Julian McAuley", affil: 1, band: false },
     { name: "Cheng-Zhi Anna Huang", affil: 2, band: false },
@@ -18,6 +18,7 @@
   const AFFILS = [
     "University of California, San Diego",
     "Massachusetts Institute of Technology",
+    "Independent Musician",
   ];
 
   const BAND = [
@@ -104,7 +105,7 @@
     code: "https://github.com/pnlong/jazz-standard-dataset",
     package: "https://pypi.org/project/jazzsamba/",
     zenodo: "https://zenodo.org/records/22943963",
-    paper: null,
+    paper: "https://arxiv.org/abs/2609.34931",
   };
 
   function pageName() {

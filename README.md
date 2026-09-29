@@ -1,5 +1,7 @@
 # jazzsamba-demo
 
+[![arXiv](https://img.shields.io/badge/arXiv-2609.34931-b31b1b.svg)](https://arxiv.org/abs/2609.34931)
+
 Project page for **JazzSAMBA**: paper overview, mix-only dataset explorer, recording story, and the band.
 
 Live site: [pnlong.github.io/jazzsamba-demo](https://pnlong.github.io/jazzsamba-demo/)
@@ -8,6 +10,7 @@ Live site: [pnlong.github.io/jazzsamba-demo](https://pnlong.github.io/jazzsamba-
 
 | | |
 |--|--|
+| **Paper** | [arXiv:2609.34931](https://arxiv.org/abs/2609.34931) |
 | **Dataset download** | [Zenodo `10.5281/zenodo.22943963`](https://zenodo.org/records/22943963) — full FLAC stems, worse takes, MIDI, annotations |
 | **Python API** | [`pnlong/jazzsamba`](https://github.com/pnlong/jazzsamba) |
 | **Processing pipeline** | [`pnlong/jazz-standard-dataset`](https://github.com/pnlong/jazz-standard-dataset) — builds the release and exports these web assets |
