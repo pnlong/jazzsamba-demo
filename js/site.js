@@ -130,8 +130,8 @@
     if (!footer) return;
 
     const homeLink = `<a href="index.html">JazzSAMBA</a>`;
-    const codeLink = `<a data-link="code" href="#">Code</a>`;
-    const packageLink = `<a data-link="package" href="#">Package</a>`;
+    const codeLink = `<a data-link="code" href="#" target="_blank" rel="noopener noreferrer">Code</a>`;
+    const packageLink = `<a data-link="package" href="#" target="_blank" rel="noopener noreferrer">Package</a>`;
     const page = pageName();
 
     let line = "";
