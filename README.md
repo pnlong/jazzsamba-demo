@@ -11,11 +11,11 @@ Live site: [pnlong.github.io/jazzsamba-demo](https://pnlong.github.io/jazzsamba-
 | | |
 |--|--|
 | **Paper** | [arXiv:2609.34931](https://arxiv.org/abs/2609.34931) |
-| **Dataset download** | [Zenodo `10.5281/zenodo.22943963`](https://zenodo.org/records/22943963) — full FLAC stems, worse takes, MIDI, annotations |
+| **Dataset download** | [Zenodo `10.5281/zenodo.22943963`](https://zenodo.org/records/22943963) — full FLAC stems, alternate takes, MIDI, annotations |
 | **Python API** | [`pnlong/jazzsamba`](https://github.com/pnlong/jazzsamba) |
 | **Processing pipeline** | [`pnlong/jazz-standard-dataset`](https://github.com/pnlong/jazz-standard-dataset) — builds the release and exports these web assets |
 
-This site plays **better-take stereo mixes** (24 kHz / 192 kbps MP3). Featured home samples are **1-minute previews** (mix + stems); open Explore for full takes. Full-corpus stems and worse takes are in the Zenodo download.
+This site plays **preferred-take stereo mixes**, downsampled to 24 kHz / 192 kbps MP3. Featured home samples are **1-minute previews** (mix + stems); open Explore for full takes. Full-corpus stems and alternate takes are in the Zenodo download.
 
 ## Local preview
 

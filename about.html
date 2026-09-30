@@ -48,8 +48,8 @@
           harder mainly because of scheduling: getting everyone free at the same time rarely
           worked, which is a big reason the asynchronous protocol is in the corpus. It let us
           keep adding songs on our own time. Drums went first so everyone else had something to
-          play against. On a given part the worse take is usually the first one, often a cold
-          read, and the better take is the one after the form feels familiar. For synchronous
+          play against. The musicians then chose which take was preferred and which was alternate.
+          For synchronous
           recording the pain was less about timing and more about organizing the sessions and
           not wearing everyone out.
         </p>
@@ -60,8 +60,8 @@
           was whoever was free. I did the annotation and processing pipeline. Everyone played,
           me included. Recording took much longer than labeling; once the audio was in, the lane
           annotations were maybe a week or two. One thing about asynchronous takes that is easy
-          to miss: a worse take is not always a clean leftover. Later instruments always sit on
-          the better takes of whoever recorded earlier.
+          to miss: an alternate take is not always a clean leftover. Later instruments always sit on
+          the preferred takes of whoever recorded earlier.
         </p>
         <p>
           I care about musician-in-the-loop work in AI music, and I want this release to be
@@ -86,19 +86,20 @@
         <article class="protocol-card">
           <h3><span class="chip chip-async">Asynchronous</span> Per-instrument sessions</h3>
           <p>
-            Musicians record separately. Drums go down first to establish the grid; each
-            instrument has two takes assigned to <strong>better</strong> or <strong>worse</strong>
-            tiers. Mixtures are loudness-normalized composites. Annotations are authored on
-            the better mixture and shared with the worse tier via the same bar grid.
+            Musicians record separately. Drums go down first, and later instruments overdub
+            on the preferred takes recorded earlier. Each instrument records two clean takes:
+            preferred stems form the preferred mixture, and the remaining takes form the
+            alternate tier. The overdubs are fixed-tempo, so annotations written on the
+            preferred mixture are copied onto the alternate tier.
           </p>
         </article>
         <article class="protocol-card">
           <h3><span class="chip chip-sync">Synchronous</span> Full band together</h3>
           <p>
-            The ensemble records two whole-band takes. Better/worse select entire performances
-            (not per stem). Close-mic bleed is expected; the public release includes original
-            stems plus debleeded derived audio. Live timing varies — use the annotated bar grid,
-            not a fixed BPM.
+            The full band records two ensemble takes, and the musicians pick one preferred
+            take. Preferred and alternate are whole performances, not per-stem choices.
+            Close-mic bleed makes this the harder condition. The release includes those
+            stems and a Wiener-style de-bleeded version, and each take is annotated separately.
           </p>
         </article>
       </div>
@@ -107,18 +108,22 @@
     <section class="section">
       <h2>Annotations</h2>
       <p>
-        Lead sheets seed rough bars, chords, sections, and soloists. A browser lane annotator
-        aligns the bar grid to audio, then edits chords, sections, and soloists in metrical
-        coordinates. Public CSVs ship under each take’s <code>annotations/</code> folder with
-        both metrical and absolute-time fields.
+        Bars, chords, sections, and soloists share one bar grid. Bars give onset times and
+        measure numbers. Chords, sections, and soloists sit on bar-and-fraction offsets so
+        harmony and form stay aligned to the performance. Chord labels come from written
+        lead sheets, not from estimates of the audio: the written chart is time-aligned,
+        keeping symbols such as root, seventh, extensions, and slash bass. Section tags
+        follow jazz form (intro, head-in, head-out, solos, outro), with nested letters when
+        a section needs them. A per-section table records who plays, and soloist rows give
+        the solo order.
       </p>
     </section>
 
     <section class="section">
       <h2>Website vs download</h2>
       <ul class="contrib-list">
-        <li><strong>On Explore:</strong> better-take stereo mixtures (mix-only, compressed for the web) and a read-only annotation viewer.</li>
-        <li><strong>On Zenodo:</strong> full FLAC stems and mixtures, worse takes, ground-truth MIDI, derived AMT/debleed overlays, catalog tables.</li>
+        <li><strong>On Explore:</strong> preferred-take stereo mixtures (mix-only, compressed for the web) and a read-only annotation viewer.</li>
+        <li><strong>On Zenodo:</strong> full 48&nbsp;kHz FLAC stems and mixtures, alternate takes, ground-truth MIDI for piano (and for drums on the asynchronous takes), automatic-transcription MIDI otherwise, derived debleed overlays, and catalog tables.</li>
       </ul>
     </section>
 
